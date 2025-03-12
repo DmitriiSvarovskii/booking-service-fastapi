@@ -1,11 +1,12 @@
 import datetime
 from typing import Annotated, AsyncGenerator, Any
 from sqlalchemy import MetaData, String, text, ForeignKey
+from sqlalchemy.sql import func
 from sqlalchemy.types import JSON
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase, mapped_column
 from sqlalchemy.pool import NullPool
-from src.config.app import settings
+from src.configs.app import settings
 
 
 metadata = MetaData()
@@ -40,26 +41,46 @@ intpk = Annotated[int, mapped_column(primary_key=True, index=True)]
 
 is_active = Annotated[bool, mapped_column(server_default=text("true"))]
 
-created_at = Annotated[datetime.datetime, mapped_column(
-    server_default=text("TIMEZONE('utc', now())"))]
+created_at = Annotated[
+    datetime.datetime,
+    mapped_column(
+        server_default=text("TIMEZONE('utc', now())"),
+        server_onupdate=func.now()
+    )
+]
 
-# created_by = Annotated[int, mapped_column(
-#     ForeignKey("users.id", ondelete="CASCADE"))]
+created_by = Annotated[int, mapped_column(
+    ForeignKey("employees.id", ondelete="CASCADE"))]
 
-updated_at = Annotated[datetime.datetime, mapped_column(
-    server_default=text("TIMEZONE('utc', now())"),
-    onupdate=datetime.datetime.utcnow,
-)]
+updated_at = Annotated[
+    datetime.datetime,
+    mapped_column(
+        server_default=text("TIMEZONE('utc', now())"),
+        server_onupdate=func.now()
+    )
+]
 
-updated_by = Annotated[int, mapped_column(
-    ForeignKey("public.users.id", ondelete="CASCADE"), nullable=True)]
+updated_by = Annotated[
+    int,
+    mapped_column(
+        ForeignKey(
+            "employees.id",
+            ondelete="CASCADE"
+        ),
+        nullable=True
+    )
+]
 
-deleted_at = Annotated[datetime.datetime, mapped_column(
-    server_default=text("null"),
-    onupdate=datetime.datetime.utcnow, nullable=True
-)]
+deleted_at = Annotated[
+    datetime.datetime,
+    mapped_column(
+        server_default=text("TIMEZONE('utc', now())"),
+        server_onupdate=func.now(),
+        nullable=True
+    )
+]
 
-deleted_flag = Annotated[bool, mapped_column(server_default=text("false"))]
+is_deleted = Annotated[bool, mapped_column(server_default=text("false"))]
 
 deleted_by = Annotated[int, mapped_column(
-    ForeignKey("users.id", ondelete="CASCADE"), nullable=True)]
+    ForeignKey("employees.id", ondelete="CASCADE"), nullable=True)]
