@@ -1,11 +1,10 @@
-from src.routers import table
-from src.routers import reservation
-from src.routers import category
-from src.routers import product
-from src.routers import cart
-from src.routers import order
+from src.routers import (
+    auth, table, reservation,
+    category, product, cart, order,
+)
 
 routers = (
+    auth.router,
     table.router,
     reservation.router,
     category.router,

@@ -1,16 +1,18 @@
-import datetime
-
-from typing import Optional
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, Field
 
 
-class UserBase(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
+class User(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    username: str
+    language_code: str
+    allows_write_to_pm: bool
+    photo_url: str
 
-    telegram_id: int
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    username: Optional[str] = None
-    birth_day: Optional[datetime.datetime] = None
-    is_premium: bool
-    is_active: bool
+
+class TelegramInitData(BaseModel):
+    auth_date: int
+    query_id: str
+    user: str
+    hash: str = Field(alias="hash")

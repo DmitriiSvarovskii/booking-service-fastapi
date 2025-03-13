@@ -12,6 +12,13 @@ class Settings(BaseSettings):
     DB_USER: str
     DB_PASS: str
 
+    SERVICE_HOST: str
+    SERVICE_PORT: int
+
+    BOT_TOKEN: str
+    AUTH_DATE_THRESHOLD: int
+    SECRET_KEY_STR: str
+
     @property
     def DB_URL(self):
         return (f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@"
