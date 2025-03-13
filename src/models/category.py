@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 from sqlalchemy import text
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
@@ -28,7 +28,7 @@ class Category(Base):
     deleted_at: Mapped[deleted_at]
     deleted_by: Mapped[deleted_by | None]
 
-    products: Mapped['Product'] = relationship(
+    products: Mapped[List['Product']] = relationship(
         back_populates="category")
-    employees: Mapped['Employee'] = relationship(
+    employee: Mapped['Employee'] = relationship(
         back_populates="categories")

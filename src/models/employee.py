@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 from sqlalchemy import (
     ForeignKey, Table,
     Column, Integer,
@@ -10,11 +10,15 @@ from src.db.postgres import (
     Base, intpk
 )
 
+if TYPE_CHECKING:
+    from .category import Category
+    from .reservation import ReservationStatusHistory
+
 
 employees_roles = Table(
     "employees_roles",
     Base.metadata,
-    Column("employees_id", Integer, ForeignKey(
+    Column("employee_id", Integer, ForeignKey(
         "employees.id", ondelete="CASCADE"), primary_key=True),
     Column("role_id", Integer, ForeignKey(
         "roles.id", ondelete="CASCADE"), primary_key=True),
@@ -33,6 +37,12 @@ class Employee(Base):
 
     roles: Mapped[List["Role"]] = relationship(
         back_populates="employees"
+    )
+    changed_by_employee: Mapped["ReservationStatusHistory"] = relationship(
+        back_populates="employee"
+    )
+    categories: Mapped[List["Category"]] = relationship(
+        back_populates="employee"
     )
 
 

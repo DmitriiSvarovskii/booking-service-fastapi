@@ -32,7 +32,7 @@ class UserSource(Base):
     id: Mapped[intpk]
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"))
-    source_type: Mapped[str] = mapped_column(server_default=text("direct"))
+    source_type: Mapped[str] = mapped_column(server_default="direct")
     source_details: Mapped[str | None]
     created_at: Mapped[created_at]
 

@@ -14,13 +14,14 @@ from src.db.postgres import (
 
 if TYPE_CHECKING:
     from .category import Category
+    from .cart import Cart
 
 
 class ProductImage(Base):
     __tablename__ = "product_images"
 
     id: Mapped[intpk]
-    product_id: Mapped[int] = mapped_column(ForeignKey("product.id"))
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
     url: Mapped[str_256]
     is_main: Mapped[bool] = mapped_column(server_default=text("false"))
 
@@ -28,10 +29,10 @@ class ProductImage(Base):
 
 
 class ProductPriceHistory(Base):
-    __tablename__ = "product_price_history"
+    __tablename__ = "product_price_histories"
 
     id: Mapped[intpk]
-    product_id: Mapped[int] = mapped_column(ForeignKey("product.id"))
+    product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
     price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     changed_at: Mapped[datetime.datetime] = mapped_column(
         server_default=func.now())
@@ -40,7 +41,7 @@ class ProductPriceHistory(Base):
 
 
 class Product(Base):
-    __tablename__ = "product"
+    __tablename__ = "products"
 
     id: Mapped[intpk]
     name: Mapped[str_64]
@@ -56,6 +57,8 @@ class Product(Base):
 
     category: Mapped['Category'] = relationship(
         back_populates="products")
+    cart: Mapped['Cart'] = relationship(
+        back_populates="product")
     images: Mapped[List['ProductImage']] = relationship(
         back_populates="product")
     price_history: Mapped[List['ProductPriceHistory']

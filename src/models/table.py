@@ -57,7 +57,7 @@ class TableImage(Base):
     __tablename__ = "tsble_images"
 
     id: Mapped[intpk]
-    table_id: Mapped[int] = mapped_column(ForeignKey("table.id"))
+    table_id: Mapped[int] = mapped_column(ForeignKey("tables.id"))
     url: Mapped[str_256]
     is_main: Mapped[bool] = mapped_column(server_default=text("false"))
 

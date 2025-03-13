@@ -41,13 +41,8 @@ intpk = Annotated[int, mapped_column(primary_key=True, index=True)]
 
 is_active = Annotated[bool, mapped_column(server_default=text("true"))]
 
-created_at = Annotated[
-    datetime.datetime,
-    mapped_column(
-        server_default=text("TIMEZONE('utc', now())"),
-        server_onupdate=func.now()
-    )
-]
+created_at = Annotated[datetime.datetime, mapped_column(
+    default=func.now())]
 
 created_by = Annotated[int, mapped_column(
     ForeignKey("employees.id", ondelete="CASCADE"))]
@@ -55,7 +50,7 @@ created_by = Annotated[int, mapped_column(
 updated_at = Annotated[
     datetime.datetime,
     mapped_column(
-        server_default=text("TIMEZONE('utc', now())"),
+        # server_default=func.now(),
         server_onupdate=func.now()
     )
 ]
@@ -74,8 +69,8 @@ updated_by = Annotated[
 deleted_at = Annotated[
     datetime.datetime,
     mapped_column(
-        server_default=text("TIMEZONE('utc', now())"),
-        server_onupdate=func.now(),
+        server_default=func.now(),
+        # server_onupdate=func.now(),
         nullable=True
     )
 ]

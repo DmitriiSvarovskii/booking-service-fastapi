@@ -4,9 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.postgres import (
     Base, intpk, str_64,
-    created_at, created_by,
-    updated_at, updated_by,
-    deleted_at, deleted_by, is_deleted,
+    created_at, updated_at, deleted_at,
 )
 
 if TYPE_CHECKING:
@@ -23,7 +21,7 @@ class Order(Base):
     reservation_id: Mapped[int] = mapped_column(
         ForeignKey("reservations.id", ondelete="CASCADE"))
     status: Mapped[int] = mapped_column(
-        ForeignKey("order_status.id", ondelete="CASCADE"))
+        ForeignKey("order_statuses.id", ondelete="CASCADE"))
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
 
@@ -37,17 +35,13 @@ class Order(Base):
 
 
 class OrderStatus(Base):
-    __tablename__ = "order_status"
+    __tablename__ = "order_statuses"
 
     id: Mapped[intpk]
     name: Mapped[str_64]
     created_at: Mapped[created_at]
-    created_by: Mapped[created_by | None]
     updated_at: Mapped[updated_at]
-    updated_by: Mapped[updated_by | None]
-    is_deleted: Mapped[is_deleted]
     deleted_at: Mapped[deleted_at]
-    deleted_by: Mapped[deleted_by | None]
 
     orders: Mapped[List['Order']] = relationship(back_populates="order_status")
 

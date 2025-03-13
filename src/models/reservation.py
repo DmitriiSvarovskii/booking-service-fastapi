@@ -13,6 +13,7 @@ from src.db.postgres import (
 
 if TYPE_CHECKING:
     from .user import User
+    from .employee import Employee
     from .order import Order
 
 
@@ -21,7 +22,7 @@ class Reservation(Base):
 
     id: Mapped[intpk]
     status: Mapped[int] = mapped_column(
-        ForeignKey("reservation_status.id", ondelete="CASCADE"))
+        ForeignKey("reservation_statuses.id", ondelete="CASCADE"))
     start_time: Mapped[datetime.datetime]
     end_time: Mapped[datetime.datetime]
     created_at: Mapped[created_at]
@@ -31,10 +32,13 @@ class Reservation(Base):
         back_populates="reservations")
     reservation_details: Mapped[List['ReservationDetail']] = relationship(
         back_populates="reservation")
+    status_history: Mapped[List["ReservationStatusHistory"]] = relationship(
+        back_populates="reservation", cascade="all, delete-orphan"
+    )
 
 
 class ReservationStatus(Base):
-    __tablename__ = "reservation_status"
+    __tablename__ = "reservation_statuses"
 
     id: Mapped[intpk]
     name: Mapped[str_64] = mapped_column(unique=True, nullable=False)
@@ -48,6 +52,36 @@ class ReservationStatus(Base):
 
     reservations: Mapped['Reservation'] = relationship(
         back_populates="reservation_status")
+
+
+class ReservationStatusHistory(Base):
+    __tablename__ = "reservation_status_histories"
+
+    id: Mapped[intpk]
+    reservation_id: Mapped[int] = mapped_column(
+        ForeignKey("reservations.id", ondelete="CASCADE"), nullable=False
+    )
+    previous_status: Mapped[int] = mapped_column(
+        ForeignKey("reservation_statuses.id", ondelete="SET NULL"),
+        nullable=True
+    )
+    new_status: Mapped[int] = mapped_column(
+        ForeignKey("reservation_statuses.id", ondelete="CASCADE"),
+        nullable=False
+    )
+    changed_by: Mapped[updated_by]
+    changed_at: Mapped[updated_at]
+
+    reservation: Mapped["Reservation"] = relationship(
+        back_populates="status_history")
+    changed_by_employee: Mapped["Employee"] = relationship(
+        back_populates="employee")
+    previous_status_rel: Mapped["ReservationStatus"] = relationship(
+        foreign_keys=[previous_status]
+    )
+    new_status_rel: Mapped["ReservationStatus"] = relationship(
+        foreign_keys=[new_status]
+    )
 
 
 class ReservationDetail(Base):
@@ -68,11 +102,11 @@ class ReservationDetail(Base):
 
 
 class ReservationCustomerInfo(Base):
-    __tablename__ = "reservation_customer_info"
+    __tablename__ = "reservation_customer_infos"
 
     id: Mapped[intpk]
     reservation_id: Mapped[int] = mapped_column(
-        ForeignKey("reservation.id", ondelete="CASCADE"))
+        ForeignKey("reservations.id", ondelete="CASCADE"))
     last_name: Mapped[str | None]
     first_name: Mapped[str | None]
     phone: Mapped[str | None]
