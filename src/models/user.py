@@ -20,7 +20,7 @@ class User(Base):
     birth_day: Mapped[datetime.datetime | None]
     is_premium: Mapped[bool] = mapped_column(server_default=text("false"))
     created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
+    updated_at: Mapped[updated_at | None]
     is_active: Mapped[bool] = mapped_column(server_default=text("true"))
 
     sources: Mapped[List["UserSource"]] = relationship(back_populates="user")

@@ -1,4 +1,14 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
+
+
+class UserCreate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    telegram_id: int
+    first_name: str
+    last_name: str
+    username: str
+    is_premium: bool
 
 
 class User(BaseModel):
