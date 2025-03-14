@@ -1,8 +1,5 @@
-from typing import List, TYPE_CHECKING
 from sqlalchemy import (
-    ForeignKey, Table,
-    Column, Integer,
-    UniqueConstraint, text
+    ForeignKey, text
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -10,20 +7,19 @@ from src.db.postgres import (
     Base, intpk
 )
 
-if TYPE_CHECKING:
-    from .category import Category
-    from .reservation import ReservationStatusHistory
 
+class EmployeeRole(Base):
+    __tablename__ = "employees_roles"
 
-employees_roles = Table(
-    "employees_roles",
-    Base.metadata,
-    Column("employee_id", Integer, ForeignKey(
-        "employees.id", ondelete="CASCADE"), primary_key=True),
-    Column("role_id", Integer, ForeignKey(
-        "roles.id", ondelete="CASCADE"), primary_key=True),
-    UniqueConstraint("employee_id", "role_id", name="uq_employee_role")
-)
+    employee_id: Mapped[int] = mapped_column(
+        ForeignKey("employees.id", ondelete="CASCADE"), primary_key=True
+    )
+    role_id: Mapped[int] = mapped_column(
+        ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True
+    )
+
+    employee: Mapped['Employee'] = relationship(back_populates="roles")
+    roles: Mapped['Role'] = relationship(back_populates="employees")
 
 
 class Employee(Base):
@@ -35,15 +31,7 @@ class Employee(Base):
     phone: Mapped[str] = mapped_column(nullable=True, unique=True)
     is_active: Mapped[bool] = mapped_column(default=True)
 
-    roles: Mapped[List["Role"]] = relationship(
-        back_populates="employees"
-    )
-    changed_by_employee: Mapped["ReservationStatusHistory"] = relationship(
-        back_populates="employee"
-    )
-    categories: Mapped[List["Category"]] = relationship(
-        back_populates="employee"
-    )
+    roles: Mapped['EmployeeRole'] = relationship(back_populates="employee")
 
 
 class Role(Base):
@@ -53,8 +41,7 @@ class Role(Base):
     name: Mapped[str] = mapped_column(nullable=False, unique=True)
     description: Mapped[str] = mapped_column(nullable=True)
     level: Mapped[int] = mapped_column(
-        nullable=False, server_default=text("0"))
-
-    employees: Mapped[List["Employee"]] = relationship(
-        secondary=employees_roles, back_populates="roles"
+        nullable=False, server_default=text("0")
     )
+
+    employees: Mapped["EmployeeRole"] = relationship(back_populates="roles")

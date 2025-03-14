@@ -9,13 +9,13 @@ from .reservation import (
     ReservationCustomerInfo, ReservationReview
 )
 from .order import Order, OrderDetail, OrderStatus
-from .employee import Employee, Role, employees_roles
+from .employee import Employee, Role, EmployeeRole
 from .establishment import Establishment, WorkingHours
 
 __all__ = (
     'Employee',
     'Role',
-    'employees_roles',
+    'EmployeeRole',
     'Category',
     'Product',
     'ProductPriceHistory',

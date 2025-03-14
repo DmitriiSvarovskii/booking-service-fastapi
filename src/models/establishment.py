@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List
+from typing import List
 from sqlalchemy import text, ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
@@ -8,9 +8,6 @@ from src.db.postgres import (
     updated_at, updated_by,
     deleted_at, deleted_by, is_deleted,
 )
-
-if TYPE_CHECKING:
-    from .reservation import Reservation
 
 
 class Establishment(Base):
@@ -32,8 +29,6 @@ class Establishment(Base):
     deleted_at: Mapped[deleted_at]
     deleted_by: Mapped[deleted_by | None]
 
-    reservations: Mapped[List["Reservation"]] = relationship(
-        back_populates="establishment")
     working_hours: Mapped[List["WorkingHours"]] = relationship(
         back_populates="establishment")
 

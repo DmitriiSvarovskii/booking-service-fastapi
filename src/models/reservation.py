@@ -5,16 +5,14 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.db.postgres import (
-    Base, intpk, str_64,
-    created_at, created_by,
-    updated_at, updated_by,
-    deleted_at, deleted_by, is_deleted,
+    Base, intpk, str_64, created_at, changed_at,
+    updated_at, changed_by, deleted_at,
 )
 
 if TYPE_CHECKING:
     from .user import User
-    from .employee import Employee
     from .order import Order
+    from .table import Table
 
 
 class Reservation(Base):
@@ -30,11 +28,18 @@ class Reservation(Base):
 
     reservation_status: Mapped['ReservationStatus'] = relationship(
         back_populates="reservations")
-    reservation_details: Mapped[List['ReservationDetail']] = relationship(
+
+    reservation_details: Mapped['ReservationDetail'] = relationship(
         back_populates="reservation")
     status_history: Mapped[List["ReservationStatusHistory"]] = relationship(
         back_populates="reservation", cascade="all, delete-orphan"
     )
+    review: Mapped['ReservationReview'] = relationship(
+        back_populates="reservation")
+    reservation_customer_info: Mapped['ReservationCustomerInfo'] = relationship(  # noqa
+        back_populates="reservation")
+    orders: Mapped['Order'] = relationship(
+        back_populates="reservation")
 
 
 class ReservationStatus(Base):
@@ -43,12 +48,8 @@ class ReservationStatus(Base):
     id: Mapped[intpk]
     name: Mapped[str_64] = mapped_column(unique=True, nullable=False)
     created_at: Mapped[created_at]
-    created_by: Mapped[created_by | None]
     updated_at: Mapped[updated_at]
-    updated_by: Mapped[updated_by | None]
-    is_deleted: Mapped[is_deleted]
     deleted_at: Mapped[deleted_at]
-    deleted_by: Mapped[deleted_by | None]
 
     reservations: Mapped['Reservation'] = relationship(
         back_populates="reservation_status")
@@ -69,25 +70,24 @@ class ReservationStatusHistory(Base):
         ForeignKey("reservation_statuses.id", ondelete="CASCADE"),
         nullable=False
     )
-    changed_by: Mapped[updated_by]
-    changed_at: Mapped[updated_at]
+    changed_by: Mapped[changed_by]
+    changed_at: Mapped[changed_at]
 
     reservation: Mapped["Reservation"] = relationship(
         back_populates="status_history")
-    changed_by_employee: Mapped["Employee"] = relationship(
-        back_populates="employee")
-    previous_status_rel: Mapped["ReservationStatus"] = relationship(
-        foreign_keys=[previous_status]
-    )
+    reservation_status: Mapped["ReservationStatus"] = relationship(
+        foreign_keys=[previous_status])
     new_status_rel: Mapped["ReservationStatus"] = relationship(
-        foreign_keys=[new_status]
-    )
+        foreign_keys=[new_status])
 
 
 class ReservationDetail(Base):
     __tablename__ = "reservation_details"
 
     id: Mapped[intpk]
+    reservation_id: Mapped[int] = mapped_column(
+        ForeignKey("reservations.id", ondelete="CASCADE")
+    )
     table_id: Mapped[int] = mapped_column(
         ForeignKey("tables.id", ondelete="CASCADE"))
     user_id: Mapped[int] = mapped_column(
@@ -97,7 +97,9 @@ class ReservationDetail(Base):
     updated_at: Mapped[updated_at]
 
     user: Mapped['User'] = relationship(back_populates="reservation_details")
-    orders: Mapped['Order'] = relationship(
+    table: Mapped['Table'] = relationship(
+        back_populates="reservation_details")
+    reservation: Mapped['Reservation'] = relationship(
         back_populates="reservation_details")
 
 
@@ -111,7 +113,7 @@ class ReservationCustomerInfo(Base):
     first_name: Mapped[str | None]
     phone: Mapped[str | None]
 
-    reservation: Mapped['Order'] = relationship(
+    reservation: Mapped['Reservation'] = relationship(
         back_populates="reservation_customer_info")
 
 

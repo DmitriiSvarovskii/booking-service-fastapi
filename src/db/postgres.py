@@ -44,6 +44,9 @@ is_active = Annotated[bool, mapped_column(server_default=text("true"))]
 created_at = Annotated[datetime.datetime, mapped_column(
     default=func.now())]
 
+changed_at = Annotated[datetime.datetime, mapped_column(
+    default=func.now())]
+
 created_by = Annotated[int, mapped_column(
     ForeignKey("employees.id", ondelete="CASCADE"))]
 
@@ -56,6 +59,17 @@ updated_at = Annotated[
 ]
 
 updated_by = Annotated[
+    int,
+    mapped_column(
+        ForeignKey(
+            "employees.id",
+            ondelete="CASCADE"
+        ),
+        nullable=True
+    )
+]
+
+changed_by = Annotated[
     int,
     mapped_column(
         ForeignKey(

@@ -1,5 +1,4 @@
-from typing import Optional, List  # noqa
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends,  status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.repositories.user import UserRepository
@@ -17,7 +16,7 @@ router = APIRouter(
     response_model=dict,
     status_code=status.HTTP_201_CREATED
 )
-async def get_all_table(
+async def create_user(
     user_data: UserCreate,
     session: AsyncSession = Depends(get_async_session)
 ):

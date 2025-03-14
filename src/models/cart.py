@@ -19,10 +19,5 @@ class Cart(Base):
         ForeignKey("products.id", ondelete="CASCADE"))
     quantity: Mapped[int]
 
-    product_rel: Mapped["Product"] = relationship(
-        foreign_keys=[product_id]
-    )
-    product: Mapped['Product'] = relationship(
-        back_populates="cart")
-    user: Mapped['User'] = relationship(
-        back_populates="cart")
+    user: Mapped['User'] = relationship(back_populates="carts")
+    product: Mapped['Product'] = relationship(back_populates="carts")

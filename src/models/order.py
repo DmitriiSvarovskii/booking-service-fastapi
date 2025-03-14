@@ -10,6 +10,7 @@ from src.db.postgres import (
 if TYPE_CHECKING:
     from .user import User
     from .product import Product
+    from .reservation import Reservation
 
 
 class Order(Base):
@@ -26,10 +27,10 @@ class Order(Base):
     updated_at: Mapped[updated_at]
 
     user: Mapped['User'] = relationship(back_populates="orders")
-    reservation: Mapped['OrderDetail'] = relationship(
-        back_populates="order")
+    reservation: Mapped['Reservation'] = relationship(
+        back_populates="orders")
     order_status: Mapped['OrderStatus'] = relationship(
-        back_populates="order")
+        back_populates="orders")
     order_details: Mapped[List['OrderDetail']] = relationship(
         back_populates="orders")
 
@@ -58,7 +59,7 @@ class OrderDetail(Base):
     created_at: Mapped[created_at]
     updated_at: Mapped[updated_at]
 
-    order: Mapped['Order'] = relationship(
+    orders: Mapped['Order'] = relationship(
         back_populates="order_details")
     product: Mapped['Product'] = relationship(
         back_populates="order_details")
