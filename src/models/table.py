@@ -9,7 +9,6 @@ from src.db.postgres import (
 )
 
 if TYPE_CHECKING:
-    from .employee import Employee
     from .reservation import ReservationDetail
 
 
@@ -22,7 +21,7 @@ class Table(Base):
     created_by: Mapped[int] = mapped_column(
         ForeignKey("employees.id", ondelete="CASCADE"))
     created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
+    updated_at: Mapped[updated_at | None]
     updated_by: Mapped[int | None] = mapped_column(
         ForeignKey("employees.id", ondelete="CASCADE"))
     is_deleted: Mapped[is_deleted]
@@ -36,12 +35,6 @@ class Table(Base):
         "TableInfo", back_populates="table")
     reservation_details: Mapped['ReservationDetail'] = relationship(
         back_populates="table")
-    # created_by_employee: Mapped['Employee'] = relationship(
-    #     "Employee", foreign_keys=[created_by], backref="created_tables")
-    # updated_by_employee: Mapped['Employee'] = relationship(
-    #     "Employee", foreign_keys=[updated_by], backref="updated_tables")
-    # deleted_by_employee: Mapped['Employee'] = relationship(
-    #     "Employee", foreign_keys=[deleted_by], backref="deleted_tables")
 
 
 class TableInfo(Base):
@@ -53,7 +46,7 @@ class TableInfo(Base):
     created_by: Mapped[int] = mapped_column(
         ForeignKey("employees.id", ondelete="CASCADE"))
     created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
+    updated_at: Mapped[updated_at | None]
     updated_by: Mapped[int | None] = mapped_column(
         ForeignKey("employees.id", ondelete="CASCADE"))
     is_deleted: Mapped[is_deleted]
@@ -62,12 +55,6 @@ class TableInfo(Base):
         ForeignKey("employees.id", ondelete="CASCADE"))
 
     table: Mapped['Table'] = relationship("Table", back_populates="table_info")
-    # created_by_employee: Mapped['Employee'] = relationship(
-    #     "Employee", foreign_keys=[created_by], backref="created_table_info")
-    # updated_by_employee: Mapped['Employee'] = relationship(
-    #     "Employee", foreign_keys=[updated_by], backref="updated_table_info")
-    # deleted_by_employee: Mapped['Employee'] = relationship(
-    #     "Employee", foreign_keys=[deleted_by], backref="deleted_table_info")
 
 
 class TableImage(Base):

@@ -1,12 +1,14 @@
 import datetime
 
 from typing import TYPE_CHECKING, List
+from enum import Enum
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Enum as SQLEnum
 
 from src.db.postgres import (
-    Base, intpk, str_64, created_at, changed_at,
-    updated_at, changed_by, deleted_at,
+    Base, intpk, created_at, changed_at,
+    updated_at, changed_by
 )
 
 if TYPE_CHECKING:
@@ -15,19 +17,26 @@ if TYPE_CHECKING:
     from .table import Table
 
 
+class ReservationStatusEnum(Enum):
+    PENDING = 1
+    CONFIRMED = 2
+    CANCELED = 3
+    COMPLETED = 4
+
+
 class Reservation(Base):
     __tablename__ = "reservations"
 
     id: Mapped[intpk]
-    status: Mapped[int] = mapped_column(
-        ForeignKey("reservation_statuses.id", ondelete="CASCADE"))
+    status: Mapped[ReservationStatusEnum] = mapped_column(
+        SQLEnum(ReservationStatusEnum),
+        nullable=False,
+        default=ReservationStatusEnum.PENDING
+    )
     start_time: Mapped[datetime.datetime]
     end_time: Mapped[datetime.datetime]
     created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
-
-    reservation_status: Mapped['ReservationStatus'] = relationship(
-        back_populates="reservations")
+    updated_at: Mapped[updated_at | None]
 
     reservation_details: Mapped['ReservationDetail'] = relationship(
         back_populates="reservation")
@@ -36,23 +45,11 @@ class Reservation(Base):
     )
     review: Mapped['ReservationReview'] = relationship(
         back_populates="reservation")
-    reservation_customer_info: Mapped['ReservationCustomerInfo'] = relationship(  # noqa
-        back_populates="reservation")
+    reservation_customer_info: Mapped[
+        'ReservationCustomerInfo'
+    ] = relationship(back_populates="reservation")
     orders: Mapped['Order'] = relationship(
         back_populates="reservation")
-
-
-class ReservationStatus(Base):
-    __tablename__ = "reservation_statuses"
-
-    id: Mapped[intpk]
-    name: Mapped[str_64] = mapped_column(unique=True, nullable=False)
-    created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
-    deleted_at: Mapped[deleted_at]
-
-    reservations: Mapped['Reservation'] = relationship(
-        back_populates="reservation_status")
 
 
 class ReservationStatusHistory(Base):
@@ -62,23 +59,17 @@ class ReservationStatusHistory(Base):
     reservation_id: Mapped[int] = mapped_column(
         ForeignKey("reservations.id", ondelete="CASCADE"), nullable=False
     )
-    previous_status: Mapped[int] = mapped_column(
-        ForeignKey("reservation_statuses.id", ondelete="SET NULL"),
-        nullable=True
+    previous_status: Mapped[ReservationStatusEnum] = mapped_column(
+        SQLEnum(ReservationStatusEnum), nullable=True
     )
-    new_status: Mapped[int] = mapped_column(
-        ForeignKey("reservation_statuses.id", ondelete="CASCADE"),
-        nullable=False
+    new_status: Mapped[ReservationStatusEnum] = mapped_column(
+        SQLEnum(ReservationStatusEnum), nullable=False
     )
     changed_by: Mapped[changed_by]
     changed_at: Mapped[changed_at]
 
     reservation: Mapped["Reservation"] = relationship(
         back_populates="status_history")
-    reservation_status: Mapped["ReservationStatus"] = relationship(
-        foreign_keys=[previous_status])
-    new_status_rel: Mapped["ReservationStatus"] = relationship(
-        foreign_keys=[new_status])
 
 
 class ReservationDetail(Base):
@@ -94,7 +85,7 @@ class ReservationDetail(Base):
         ForeignKey("users.id", ondelete="CASCADE"))
     comment: Mapped[str | None]
     created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
+    updated_at: Mapped[updated_at | None]
 
     user: Mapped['User'] = relationship(back_populates="reservation_details")
     table: Mapped['Table'] = relationship(

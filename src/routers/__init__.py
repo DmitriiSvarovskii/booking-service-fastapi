@@ -1,6 +1,6 @@
 from src.routers import (
     auth, user, table, reservation,
-    category, product, cart, order,
+    assortment, cart, order,
 )
 
 routers = (
@@ -8,8 +8,7 @@ routers = (
     user.router,
     table.router,
     reservation.router,
-    category.router,
-    product.router,
+    assortment.router,
     cart.router,
     order.router,
 )

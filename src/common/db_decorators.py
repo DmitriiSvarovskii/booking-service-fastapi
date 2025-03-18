@@ -11,6 +11,11 @@ def handle_db_errors(func):
     async def wrapper(*args, **kwargs):
         try:
             return await func(*args, **kwargs)
+        except IntegrityError as e:
+            raise HTTPException(
+                status_code=409,
+                detail=f"Integrity error: {str(e.orig)}"
+            )
         except DBAPIError as e:
             raise HTTPException(
                 status_code=500,
@@ -21,11 +26,7 @@ def handle_db_errors(func):
                 status_code=400,
                 detail=f"Invalid SQL statement: {str(e)}"
             )
-        except IntegrityError as e:
-            raise HTTPException(
-                status_code=409,
-                detail=f"Integrity error: {str(e)}"
-            )
+
         except OperationalError as e:
             raise HTTPException(
                 status_code=503,

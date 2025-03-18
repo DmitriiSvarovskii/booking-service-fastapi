@@ -1,13 +1,8 @@
 from pydantic import BaseModel
 
 
-class InitDataRequest(BaseModel):
-    init_data: str
-
-
-class AuthUser(BaseModel):
+class User(BaseModel):
     username: str
-    password: str
 
 
 class Token(BaseModel):

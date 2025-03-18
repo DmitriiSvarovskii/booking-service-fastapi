@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 from sqlalchemy import text, ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
@@ -22,12 +22,12 @@ class Category(Base):
     created_by: Mapped[int | None] = mapped_column(
         ForeignKey("employees.id", ondelete="CASCADE"))
     created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
+    updated_at: Mapped[updated_at | None]
     updated_by: Mapped[int | None] = mapped_column(ForeignKey(
         "employees.id", ondelete="CASCADE"), nullable=True)
     is_deleted: Mapped[is_deleted]
-    deleted_at: Mapped[deleted_at]
+    deleted_at: Mapped[deleted_at | None]
     deleted_by: Mapped[int | None] = mapped_column(ForeignKey(
         "employees.id", ondelete="CASCADE"), nullable=True)
 
-    products: Mapped['Product'] = relationship(back_populates="category")
+    products: Mapped[List['Product']] = relationship(back_populates="category")

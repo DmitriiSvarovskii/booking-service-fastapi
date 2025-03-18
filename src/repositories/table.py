@@ -28,7 +28,6 @@ class TableRepository:
                 Table.is_active is not False,
                 Table.is_deleted is not True,
             )
-            .order_by(Table.name)
         )
         result = await session.execute(query)
         table = result.scalar()
@@ -43,7 +42,7 @@ class TableRepository:
 
     @staticmethod
     @handle_db_errors
-    async def get_all_table(
+    async def get_all_tables(
         session: AsyncSession = Depends(get_async_session)
     ) -> List[TableGet]:
         query = (

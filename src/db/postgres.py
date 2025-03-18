@@ -50,44 +50,17 @@ changed_at = Annotated[datetime.datetime, mapped_column(
 created_by = Annotated[int, mapped_column(
     ForeignKey("employees.id", ondelete="CASCADE"))]
 
-updated_at = Annotated[
-    datetime.datetime,
-    mapped_column(
-        # server_default=func.now(),
-        server_onupdate=func.now()
-    )
-]
+updated_at = Annotated[datetime.datetime,
+                       mapped_column(server_onupdate=func.now())]
 
-updated_by = Annotated[
-    int,
-    mapped_column(
-        ForeignKey(
-            "employees.id",
-            ondelete="CASCADE"
-        ),
-        nullable=True
-    )
-]
+updated_by = Annotated[int, mapped_column(
+    ForeignKey("employees.id", ondelete="CASCADE"), nullable=True)]
 
-changed_by = Annotated[
-    int,
-    mapped_column(
-        ForeignKey(
-            "employees.id",
-            ondelete="CASCADE"
-        ),
-        nullable=True
-    )
-]
+changed_by = Annotated[int, mapped_column(
+    ForeignKey("employees.id", ondelete="CASCADE"), nullable=True)]
 
-deleted_at = Annotated[
-    datetime.datetime,
-    mapped_column(
-        server_default=func.now(),
-        # server_onupdate=func.now(),
-        nullable=True
-    )
-]
+deleted_at = Annotated[datetime.datetime, mapped_column(
+    server_default=func.now(), nullable=True)]
 
 is_deleted = Annotated[bool, mapped_column(server_default=text("false"))]
 

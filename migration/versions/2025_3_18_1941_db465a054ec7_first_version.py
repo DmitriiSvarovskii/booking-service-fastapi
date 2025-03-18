@@ -1,8 +1,8 @@
 """first version
 
-Revision ID: 31f81d46afac
+Revision ID: db465a054ec7
 Revises: 
-Create Date: 2025-03-14 15:33:56.964495
+Create Date: 2025-03-18 19:41:58.291347
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '31f81d46afac'
+revision: str = 'db465a054ec7'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -40,16 +40,16 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_order_statuses_id'), 'order_statuses', ['id'], unique=False)
-    op.create_table('reservation_statuses',
+    op.create_table('reservations',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=64), nullable=False),
+    sa.Column('status', sa.Enum('PENDING', 'CONFIRMED', 'CANCELED', 'COMPLETED', name='reservationstatusenum'), nullable=False),
+    sa.Column('start_time', sa.DateTime(), nullable=False),
+    sa.Column('end_time', sa.DateTime(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
-    sa.Column('deleted_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('name')
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_reservation_statuses_id'), 'reservation_statuses', ['id'], unique=False)
+    op.create_index(op.f('ix_reservations_id'), 'reservations', ['id'], unique=False)
     op.create_table('roles',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(), nullable=False),
@@ -80,7 +80,7 @@ def upgrade() -> None:
     sa.Column('availability', sa.Boolean(), server_default=sa.text('true'), nullable=False),
     sa.Column('created_by', sa.Integer(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('updated_by', sa.Integer(), nullable=True),
     sa.Column('is_deleted', sa.Boolean(), server_default=sa.text('false'), nullable=False),
     sa.Column('deleted_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
@@ -120,24 +120,58 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_establishments_id'), 'establishments', ['id'], unique=False)
-    op.create_table('reservations',
+    op.create_table('orders',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('reservation_id', sa.Integer(), nullable=False),
     sa.Column('status', sa.Integer(), nullable=False),
-    sa.Column('start_time', sa.DateTime(), nullable=False),
-    sa.Column('end_time', sa.DateTime(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('updated_at', sa.DateTime(), nullable=False),
-    sa.ForeignKeyConstraint(['status'], ['reservation_statuses.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['reservation_id'], ['reservations.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['status'], ['order_statuses.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_reservations_id'), 'reservations', ['id'], unique=False)
+    op.create_index(op.f('ix_orders_id'), 'orders', ['id'], unique=False)
+    op.create_table('reservation_customer_infos',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('reservation_id', sa.Integer(), nullable=False),
+    sa.Column('last_name', sa.String(), nullable=True),
+    sa.Column('first_name', sa.String(), nullable=True),
+    sa.Column('phone', sa.String(), nullable=True),
+    sa.ForeignKeyConstraint(['reservation_id'], ['reservations.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_reservation_customer_infos_id'), 'reservation_customer_infos', ['id'], unique=False)
+    op.create_table('reservation_reviews',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('reservation_id', sa.Integer(), nullable=False),
+    sa.Column('rating', sa.Float(), nullable=False),
+    sa.Column('comment', sa.String(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['reservation_id'], ['reservations.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_reservation_reviews_id'), 'reservation_reviews', ['id'], unique=False)
+    op.create_table('reservation_status_histories',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('reservation_id', sa.Integer(), nullable=False),
+    sa.Column('previous_status', sa.Enum('PENDING', 'CONFIRMED', 'CANCELED', 'COMPLETED', name='reservationstatusenum'), nullable=True),
+    sa.Column('new_status', sa.Enum('PENDING', 'CONFIRMED', 'CANCELED', 'COMPLETED', name='reservationstatusenum'), nullable=False),
+    sa.Column('changed_by', sa.Integer(), nullable=True),
+    sa.Column('changed_at', sa.DateTime(), nullable=False),
+    sa.ForeignKeyConstraint(['changed_by'], ['employees.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['reservation_id'], ['reservations.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_reservation_status_histories_id'), 'reservation_status_histories', ['id'], unique=False)
     op.create_table('tables',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=False),
     sa.Column('is_active', sa.Boolean(), server_default=sa.text('true'), nullable=False),
     sa.Column('created_by', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('updated_by', sa.Integer(), nullable=True),
     sa.Column('is_deleted', sa.Boolean(), server_default=sa.text('false'), nullable=False),
     sa.Column('deleted_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
@@ -158,28 +192,16 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_user_sources_id'), 'user_sources', ['id'], unique=False)
-    op.create_table('orders',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('user_id', sa.Integer(), nullable=False),
-    sa.Column('reservation_id', sa.Integer(), nullable=False),
-    sa.Column('status', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
-    sa.ForeignKeyConstraint(['reservation_id'], ['reservations.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['status'], ['order_statuses.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_orders_id'), 'orders', ['id'], unique=False)
     op.create_table('products',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('category_id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=64), nullable=False),
     sa.Column('description', sa.String(length=256), nullable=True),
+    sa.Column('price', sa.Numeric(precision=10, scale=2), nullable=False),
     sa.Column('availability', sa.Boolean(), server_default=sa.text('true'), nullable=False),
     sa.Column('created_by', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('updated_by', sa.Integer(), nullable=True),
     sa.Column('is_deleted', sa.Boolean(), server_default=sa.text('false'), nullable=False),
     sa.Column('deleted_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
@@ -191,52 +213,20 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_products_id'), 'products', ['id'], unique=False)
-    op.create_table('reservation_customer_infos',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('reservation_id', sa.Integer(), nullable=False),
-    sa.Column('last_name', sa.String(), nullable=True),
-    sa.Column('first_name', sa.String(), nullable=True),
-    sa.Column('phone', sa.String(), nullable=True),
-    sa.ForeignKeyConstraint(['reservation_id'], ['reservations.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_reservation_customer_infos_id'), 'reservation_customer_infos', ['id'], unique=False)
     op.create_table('reservation_details',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('reservation_id', sa.Integer(), nullable=False),
     sa.Column('table_id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('comment', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['reservation_id'], ['reservations.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['table_id'], ['tables.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_reservation_details_id'), 'reservation_details', ['id'], unique=False)
-    op.create_table('reservation_reviews',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('reservation_id', sa.Integer(), nullable=False),
-    sa.Column('rating', sa.Float(), nullable=False),
-    sa.Column('comment', sa.String(), nullable=True),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.ForeignKeyConstraint(['reservation_id'], ['reservations.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_reservation_reviews_id'), 'reservation_reviews', ['id'], unique=False)
-    op.create_table('reservation_status_histories',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('reservation_id', sa.Integer(), nullable=False),
-    sa.Column('previous_status', sa.Integer(), nullable=True),
-    sa.Column('new_status', sa.Integer(), nullable=False),
-    sa.Column('changed_by', sa.Integer(), nullable=True),
-    sa.Column('changed_at', sa.DateTime(), nullable=False),
-    sa.ForeignKeyConstraint(['changed_by'], ['employees.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['new_status'], ['reservation_statuses.id'], ondelete='CASCADE'),
-    sa.ForeignKeyConstraint(['previous_status'], ['reservation_statuses.id'], ondelete='SET NULL'),
-    sa.ForeignKeyConstraint(['reservation_id'], ['reservations.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_reservation_status_histories_id'), 'reservation_status_histories', ['id'], unique=False)
     op.create_table('table_images',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('table_id', sa.Integer(), nullable=False),
@@ -252,7 +242,7 @@ def upgrade() -> None:
     sa.Column('description', sa.String(length=256), nullable=False),
     sa.Column('created_by', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.Column('updated_at', sa.DateTime(), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('updated_by', sa.Integer(), nullable=True),
     sa.Column('is_deleted', sa.Boolean(), server_default=sa.text('false'), nullable=False),
     sa.Column('deleted_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
@@ -333,24 +323,22 @@ def downgrade() -> None:
     op.drop_table('table_info')
     op.drop_index(op.f('ix_table_images_id'), table_name='table_images')
     op.drop_table('table_images')
-    op.drop_index(op.f('ix_reservation_status_histories_id'), table_name='reservation_status_histories')
-    op.drop_table('reservation_status_histories')
-    op.drop_index(op.f('ix_reservation_reviews_id'), table_name='reservation_reviews')
-    op.drop_table('reservation_reviews')
     op.drop_index(op.f('ix_reservation_details_id'), table_name='reservation_details')
     op.drop_table('reservation_details')
-    op.drop_index(op.f('ix_reservation_customer_infos_id'), table_name='reservation_customer_infos')
-    op.drop_table('reservation_customer_infos')
     op.drop_index(op.f('ix_products_id'), table_name='products')
     op.drop_table('products')
-    op.drop_index(op.f('ix_orders_id'), table_name='orders')
-    op.drop_table('orders')
     op.drop_index(op.f('ix_user_sources_id'), table_name='user_sources')
     op.drop_table('user_sources')
     op.drop_index(op.f('ix_tables_id'), table_name='tables')
     op.drop_table('tables')
-    op.drop_index(op.f('ix_reservations_id'), table_name='reservations')
-    op.drop_table('reservations')
+    op.drop_index(op.f('ix_reservation_status_histories_id'), table_name='reservation_status_histories')
+    op.drop_table('reservation_status_histories')
+    op.drop_index(op.f('ix_reservation_reviews_id'), table_name='reservation_reviews')
+    op.drop_table('reservation_reviews')
+    op.drop_index(op.f('ix_reservation_customer_infos_id'), table_name='reservation_customer_infos')
+    op.drop_table('reservation_customer_infos')
+    op.drop_index(op.f('ix_orders_id'), table_name='orders')
+    op.drop_table('orders')
     op.drop_index(op.f('ix_establishments_id'), table_name='establishments')
     op.drop_table('establishments')
     op.drop_table('employees_roles')
@@ -361,8 +349,8 @@ def downgrade() -> None:
     op.drop_table('users')
     op.drop_index(op.f('ix_roles_id'), table_name='roles')
     op.drop_table('roles')
-    op.drop_index(op.f('ix_reservation_statuses_id'), table_name='reservation_statuses')
-    op.drop_table('reservation_statuses')
+    op.drop_index(op.f('ix_reservations_id'), table_name='reservations')
+    op.drop_table('reservations')
     op.drop_index(op.f('ix_order_statuses_id'), table_name='order_statuses')
     op.drop_table('order_statuses')
     op.drop_index(op.f('ix_employees_id'), table_name='employees')

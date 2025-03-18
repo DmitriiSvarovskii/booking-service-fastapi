@@ -19,6 +19,10 @@ class Settings(BaseSettings):
     AUTH_DATE_THRESHOLD: int
     SECRET_KEY_STR: str
 
+    SECRET_KEY_JWT: str
+    REFRESH_SECRET_KEY_JWT: str
+    ALGORITHM: str
+
     @property
     def DB_URL(self):
         return (f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@"

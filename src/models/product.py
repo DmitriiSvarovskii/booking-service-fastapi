@@ -48,13 +48,14 @@ class Product(Base):
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
     name: Mapped[str_64]
     description: Mapped[str_256 | None]
+    price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     availability: Mapped[bool] = mapped_column(server_default=text("true"))
     created_by: Mapped[created_by]
     created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
+    updated_at: Mapped[updated_at | None]
     updated_by: Mapped[updated_by | None]
     is_deleted: Mapped[is_deleted]
-    deleted_at: Mapped[deleted_at]
+    deleted_at: Mapped[deleted_at | None]
     deleted_by: Mapped[deleted_by | None]
 
     category: Mapped['Category'] = relationship(
