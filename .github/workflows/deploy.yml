@@ -3,21 +3,26 @@ name: Deploy to Server
 on:
   push:
     branches:
-      - main
+      - main 
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest 
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2 
 
       - name: Set up SSH key
-        uses: webfactory/ssh-agent@v0.5.3
+        uses: webfactory/ssh-agent@v0.5.3 
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }} 
+
+      - name: Add SSH host key to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H 213.139.208.72 >> ~/.ssh/known_hosts
 
       - name: Deploy to server
         run: |
-          ssh root@213.139.208.72 "cd /var/www/booking/booking-service-fastapi && git pull origin main && docker-compose up -d --build"
+          ssh root@213.139.208.72 "cd /var/www/booking/booking-service-fastapi && git pull origin main && docker-compose up -d --build"  # Выполняем деплой на сервере
