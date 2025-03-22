@@ -15,7 +15,7 @@ router = APIRouter(
 )
 
 
-@router.get("/test", response_model=list[CartAllGet])
+@router.get("/test2", response_model=list[CartAllGet])
 async def get_test_cart_items(
     session: AsyncSession = Depends(get_async_session),
     current_user: AuthUser = Depends(
