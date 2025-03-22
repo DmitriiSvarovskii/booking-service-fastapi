@@ -15,7 +15,12 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=list[CartAllGet])
+@router.get(
+    "/",
+    response_model=list[CartAllGet],
+    summary=cart_descriptions.GET_CART_ITEMS_SUMMARY,
+    description=cart_descriptions.GET_CART_ITEMS_DESCRIPTION,
+)
 async def get_cart_items(
     session: AsyncSession = Depends(get_async_session),
     current_user: AuthUser = Depends(
@@ -36,7 +41,9 @@ async def get_cart_items(
 @router.post(
     "/",
     response_model=CartGet,
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
+    summary=cart_descriptions.ADD_ONE_ITEM_FROM_CART_SUMMARY,
+    description=cart_descriptions.ADD_ONE_ITEM_FROM_CART_DESCRIPTION,
 )
 async def add_one_item_from_cart(
     cart_data: CartCreate,
@@ -78,7 +85,9 @@ async def remove_one_item_from_cart(
 @router.delete(
     "/all_item/",
     status_code=status.HTTP_200_OK,
-    response_model=dict
+    response_model=dict,
+    summary=cart_descriptions.DELETE_ALL_CART_ITEMS_SUMMARY,
+    description=cart_descriptions.DELETE_ALL_CART_ITEMS_DESCRIPTION,
 )
 async def remove_all_item_from_cart(
     session: AsyncSession = Depends(get_async_session),

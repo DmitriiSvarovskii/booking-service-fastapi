@@ -29,3 +29,31 @@ ADD_ONE_ITEM_FROM_CART_DESCRIPTION = """
 - `403 Forbidden` – Нет доступа.
 - `500 Internal Server Error` – Внутренняя ошибка сервера.
 """
+GET_CART_ITEMS_SUMMARY = "Получение всех товаров в корзине"
+
+GET_CART_ITEMS_DESCRIPTION = """
+Получение всех товаров в корзине текущего пользователя.
+
+**Требования:**
+- **JWT-токен** (если устарел — передать refresh token).
+
+**Возможные ошибки:**
+- `401 Unauthorized` – Отсутствует или некорректный JWT-токен.
+- `403 Forbidden` – Нет доступа.
+- `500 Internal Server Error` – Внутренняя ошибка сервера.
+"""
+
+DELETE_ALL_CART_ITEMS_SUMMARY = "Удаление всех товаров из корзины"
+
+DELETE_ALL_CART_ITEMS_DESCRIPTION = """
+Удаление всех товаров из корзины текущего пользователя.
+
+**Требования:**
+- **JWT-токен** (если устарел — передать refresh token).
+
+**Возможные ошибки:**
+- `401 Unauthorized` – Отсутствует или некорректный JWT-токен.
+- `403 Forbidden` – Нет доступа.
+- `500 Internal Server Error` – Внутренняя ошибка сервера.
+"""
+
