@@ -1,14 +1,63 @@
+from fastapi import APIRouter, Depends
+from src.dependencies.current_user import get_current_user
+
 from src.routers import (
-    auth, user, table, reservation,
+    auth, user, establishment, table, reservation,
     assortment, cart, order,
 )
 
-routers = (
+# Создаем список роутеров, навешивая авторизацию глобально
+routers = [
     auth.router,
-    user.router,
-    table.router,
-    reservation.router,
-    assortment.router,
-    cart.router,
-    order.router,
-)
+    APIRouter(
+        prefix="/user",
+        dependencies=[Depends(get_current_user)],
+        routes=user.router.routes
+    ),
+    APIRouter(
+        prefix="/establishment",
+        dependencies=[Depends(get_current_user)],
+        routes=establishment.router.routes
+    ),
+    APIRouter(
+        prefix="/table",
+        dependencies=[Depends(get_current_user)],
+        routes=table.router.routes
+    ),
+    APIRouter(
+        prefix="/reservation",
+        dependencies=[Depends(get_current_user)],
+        routes=reservation.router.routes
+    ),
+    APIRouter(
+        prefix="/assortment",
+        dependencies=[Depends(get_current_user)],
+        routes=assortment.router.routes
+    ),
+    APIRouter(
+        prefix="/cart",
+        dependencies=[Depends(get_current_user)],
+        routes=cart.router.routes
+    ),
+    APIRouter(
+        prefix="/order",
+        dependencies=[Depends(get_current_user)],
+        routes=order.router.routes
+    ),
+]
+
+# from src.routers import (
+#     auth, user, establishment, table, reservation,
+#     assortment, cart, order,
+# )
+
+# routers = (
+#     auth.router,
+#     user.router,
+#     establishment.router,
+#     table.router,
+#     reservation.router,
+#     assortment.router,
+#     cart.router,
+#     order.router,
+# )

@@ -1,4 +1,3 @@
-from typing import List, Optional  # noqa
 from fastapi import Depends, HTTPException
 from sqlalchemy import insert, select  # noqa
 from sqlalchemy.exc import IntegrityError

@@ -1,52 +1,96 @@
-from typing import Optional, List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.db.postgres import get_async_session
+from src.schemas.cart import CartCreate, CartAllGet, CartGet, CartRemove
+from src.repositories.cart import CartRepository
+from src.dependencies.current_user import get_current_user
+from src.schemas.auth import AuthUser
+from src.docs import cart_descriptions
 
 
 router = APIRouter(
     prefix="/api/v1/cart",
-    tags=["Cart"])
+    tags=["Cart"],
+)
 
 
-@router.get("/", response_model=List[None])
-async def get_all_cart(
-    session: AsyncSession = Depends(get_async_session)
+@router.get("/", response_model=list[CartAllGet])
+async def get_cart_items(
+    session: AsyncSession = Depends(get_async_session),
+    current_user: AuthUser = Depends(
+        get_current_user),
 ):
-    pass
+    """
+    Получение всех товаров в корзине текущего пользователя.
+
+    **Требует JWT-токен.**
+    Если токен устарел - необходимо передать refresh token.
+    """
+    return await CartRepository.get_cart_items(
+        user_id=current_user.user_id,
+        session=session
+    )
 
 
-@router.post("/", response_model=Optional[None])
-async def post_cart(
-    session: AsyncSession = Depends(get_async_session)
+@router.post(
+    "/",
+    response_model=CartGet,
+    status_code=status.HTTP_201_CREATED
+)
+async def add_one_item_from_cart(
+    cart_data: CartCreate,
+    session: AsyncSession = Depends(get_async_session),
+    current_user: AuthUser = Depends(get_current_user),
 ):
-    pass
+    """
+    Добавление товара в корзину.
+
+    **Требует JWT-токен.**
+    Если токен устарел - необходимо передать refresh token.
+    """
+    try:
+        cart_data.user_id = current_user.user_id
+        return await CartRepository.add_one_item_from_cart(cart_data, session)
+    except Exception as e:
+        print(f"Error while adding to cart: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Internal error: {str(e)}"
+        )
 
 
-@router.put("/{id}/", response_model=Optional[None])
-async def put_cart(
-    session: AsyncSession = Depends(get_async_session)
+@router.patch(
+    "/",
+    response_model=CartGet,
+    status_code=status.HTTP_200_OK,
+    summary=cart_descriptions.REMOVE_ONE_ITEM_FROM_CART_SUMMARY,
+    description=cart_descriptions.REMOVE_ONE_ITEM_FROM_CART_DESCRIPTION,
+)
+async def remove_one_item_from_cart(
+    cart_data: CartRemove,
+    session: AsyncSession = Depends(get_async_session),
+    current_user: AuthUser = Depends(get_current_user),
 ):
-    pass
+    cart_data.user_id = current_user.user_id
+    return await CartRepository.remove_from_cart(cart_data, session)
 
 
-@router.patch("/{id}/", response_model=Optional[None])
-async def patch_cart(
-    session: AsyncSession = Depends(get_async_session)
+@router.delete(
+    "/all_item/",
+    status_code=status.HTTP_200_OK,
+    response_model=dict
+)
+async def remove_all_item_from_cart(
+    session: AsyncSession = Depends(get_async_session),
+    current_user: AuthUser = Depends(get_current_user),
 ):
-    pass
+    """
+    Очистка всей корзины текущего пользователя.
 
-
-@router.delete("/{id}/", response_model=Optional[None])
-async def delete_one_item(
-    session: AsyncSession = Depends(get_async_session)
-):
-    pass
-
-
-@router.delete("/", response_model=Optional[None])
-async def delete_all_cart(
-    session: AsyncSession = Depends(get_async_session)
-):
-    pass
+    **Требует JWT-токен.**
+    Если токен устарел - необходимо передать refresh token.
+    """
+    return await CartRepository.remove_all_from_cart_by_user_id(
+        user_id=current_user.user_id,
+        session=session
+    )

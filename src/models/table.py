@@ -1,4 +1,4 @@
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from sqlalchemy import ForeignKey, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -29,7 +29,7 @@ class Table(Base):
     deleted_by: Mapped[int | None] = mapped_column(
         ForeignKey("employees.id", ondelete="CASCADE"))
 
-    table_images: Mapped[List['TableImage']] = relationship(
+    table_images: Mapped[list['TableImage']] = relationship(
         "TableImage", back_populates="table")
     table_info: Mapped['TableInfo'] = relationship(
         "TableInfo", back_populates="table")

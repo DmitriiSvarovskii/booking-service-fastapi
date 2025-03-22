@@ -5,7 +5,7 @@ from urllib.parse import unquote
 from fastapi import HTTPException, status
 import jwt
 from datetime import datetime, timedelta, UTC
-from typing import Tuple
+# from typing import Tuple
 
 
 class DataValidator:
@@ -23,7 +23,7 @@ class DataValidator:
         self.jwt_refresh_secret = jwt_refresh_secret
         self.jwt_algorithm = jwt_algorithm
 
-    def generate_tokens(self, user_id: int) -> Tuple[str, str]:
+    def generate_tokens(self, user_id: int) -> tuple[str, str]:
         """Генерация JWT access token и refresh token."""
 
         def create_token(secret: str, exp_delta: timedelta) -> str:
@@ -91,3 +91,8 @@ class DataValidator:
         ).hexdigest()
 
         return data_check == my_hash
+
+    def get_user_id(self, init_data: str) -> int:
+        init_data = unquote(init_data)
+        params = dict(chunk.split("=") for chunk in init_data.split("&"))
+        return int(params.get("user"))

@@ -1,7 +1,7 @@
 import datetime
 
 from decimal import Decimal
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 from sqlalchemy import ForeignKey, Numeric, func, text
 
@@ -60,9 +60,9 @@ class Product(Base):
 
     category: Mapped['Category'] = relationship(
         back_populates="products")
-    images: Mapped[List['ProductImage']] = relationship(
+    images: Mapped[list['ProductImage']] = relationship(
         back_populates="product")
-    price_history: Mapped[List['ProductPriceHistory']
+    price_history: Mapped[list['ProductPriceHistory']
                           ] = relationship(back_populates="product")
     carts: Mapped['Cart'] = relationship(back_populates="product")
     order_details: Mapped['OrderDetail'] = relationship(

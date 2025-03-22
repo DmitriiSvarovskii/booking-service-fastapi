@@ -1,4 +1,3 @@
-from typing import List
 from sqlalchemy import text, ForeignKey
 from sqlalchemy.orm import Mapped, relationship, mapped_column
 
@@ -23,13 +22,13 @@ class Establishment(Base):
     is_active: Mapped[bool] = mapped_column(server_default=text("true"))
     created_by: Mapped[created_by]
     created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
+    updated_at: Mapped[updated_at | None]
     updated_by: Mapped[updated_by | None]
     is_deleted: Mapped[is_deleted]
     deleted_at: Mapped[deleted_at]
     deleted_by: Mapped[deleted_by | None]
 
-    working_hours: Mapped[List["WorkingHours"]] = relationship(
+    working_hours: Mapped[list["WorkingHours"]] = relationship(
         back_populates="establishment")
 
 

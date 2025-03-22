@@ -7,14 +7,12 @@ from .reservation import (
     Reservation, ReservationStatusHistory, ReservationDetail,
     ReservationCustomerInfo, ReservationReview
 )
-from .order import Order, OrderDetail, OrderStatus
-from .employee import Employee, Role, EmployeeRole
+from .order import Order, OrderDetail
+from .employee import Employee
 from .establishment import Establishment, WorkingHours
 
 __all__ = (
     'Employee',
-    'Role',
-    'EmployeeRole',
     'Category',
     'Product',
     'ProductPriceHistory',
@@ -22,7 +20,6 @@ __all__ = (
     'User',
     'UserSource',
     'Cart',
-    'OrderStatus',
     'Order',
     'OrderDetail',
     'Establishment',

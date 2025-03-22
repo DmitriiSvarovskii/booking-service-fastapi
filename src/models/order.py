@@ -1,16 +1,25 @@
-from typing import TYPE_CHECKING, List
-from sqlalchemy import ForeignKey
+from typing import TYPE_CHECKING
+from enum import Enum
+from sqlalchemy import ForeignKey, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+
 from src.db.postgres import (
-    Base, intpk, str_64,
-    created_at, updated_at, deleted_at,
+    Base, intpk,
+    created_at, updated_at
 )
 
 if TYPE_CHECKING:
     from .user import User
     from .product import Product
     from .reservation import Reservation
+
+
+class OrderStatusEnum(Enum):
+    PENDING = 1
+    CONFIRMED = 2
+    CANCELED = 3
+    COMPLETED = 4
 
 
 class Order(Base):
@@ -21,30 +30,21 @@ class Order(Base):
         ForeignKey("users.id", ondelete="CASCADE"))
     reservation_id: Mapped[int] = mapped_column(
         ForeignKey("reservations.id", ondelete="CASCADE"))
-    status: Mapped[int] = mapped_column(
-        ForeignKey("order_statuses.id", ondelete="CASCADE"))
+    comment: Mapped[str | None]
+    status: Mapped[OrderStatusEnum] = mapped_column(
+        SQLEnum(OrderStatusEnum),
+        nullable=False,
+        default=OrderStatusEnum.PENDING
+    )
+    total_price: Mapped[float]
     created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
+    updated_at: Mapped[updated_at | None]
 
     user: Mapped['User'] = relationship(back_populates="orders")
     reservation: Mapped['Reservation'] = relationship(
         back_populates="orders")
-    order_status: Mapped['OrderStatus'] = relationship(
+    order_details: Mapped[list['OrderDetail']] = relationship(
         back_populates="orders")
-    order_details: Mapped[List['OrderDetail']] = relationship(
-        back_populates="orders")
-
-
-class OrderStatus(Base):
-    __tablename__ = "order_statuses"
-
-    id: Mapped[intpk]
-    name: Mapped[str_64]
-    created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
-    deleted_at: Mapped[deleted_at]
-
-    orders: Mapped[List['Order']] = relationship(back_populates="order_status")
 
 
 class OrderDetail(Base):
@@ -57,7 +57,7 @@ class OrderDetail(Base):
         ForeignKey("products.id", ondelete="CASCADE"))
     quantity: Mapped[int]
     created_at: Mapped[created_at]
-    updated_at: Mapped[updated_at]
+    updated_at: Mapped[updated_at | None]
 
     orders: Mapped['Order'] = relationship(
         back_populates="order_details")

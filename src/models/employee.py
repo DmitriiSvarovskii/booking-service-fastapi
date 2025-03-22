@@ -1,47 +1,28 @@
-from sqlalchemy import (
-    ForeignKey, text
-)
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from enum import Enum
+from sqlalchemy import Enum as SQLEnum
+from sqlalchemy.orm import Mapped, mapped_column
 
 from src.db.postgres import (
-    Base, intpk
+    Base, intpk, str_64
 )
 
 
-class EmployeeRole(Base):
-    __tablename__ = "employees_roles"
-
-    employee_id: Mapped[int] = mapped_column(
-        ForeignKey("employees.id", ondelete="CASCADE"), primary_key=True
-    )
-    role_id: Mapped[int] = mapped_column(
-        ForeignKey("roles.id", ondelete="CASCADE"), primary_key=True
-    )
-
-    employee: Mapped['Employee'] = relationship(back_populates="roles")
-    roles: Mapped['Role'] = relationship(back_populates="employees")
+class EmployeeRoleEnum(Enum):
+    MANAGER = 1
+    ADMIN = 2
+    SUPERADMIN = 3
 
 
 class Employee(Base):
     __tablename__ = "employees"
 
     id: Mapped[intpk]
-    full_name: Mapped[str] = mapped_column(nullable=False)
-    email: Mapped[str] = mapped_column(nullable=False, unique=True)
-    phone: Mapped[str] = mapped_column(nullable=True, unique=True)
+    first_name: Mapped[str_64 | None]
+    last_name: Mapped[str_64 | None]
+    phone: Mapped[str_64 | None] = mapped_column(unique=True)
     is_active: Mapped[bool] = mapped_column(default=True)
-
-    roles: Mapped['EmployeeRole'] = relationship(back_populates="employee")
-
-
-class Role(Base):
-    __tablename__ = "roles"
-
-    id: Mapped[intpk]
-    name: Mapped[str] = mapped_column(nullable=False, unique=True)
-    description: Mapped[str] = mapped_column(nullable=True)
-    level: Mapped[int] = mapped_column(
-        nullable=False, server_default=text("0")
+    role: Mapped[EmployeeRoleEnum] = mapped_column(
+        SQLEnum(EmployeeRoleEnum),
+        nullable=False,
+        default=EmployeeRoleEnum.MANAGER
     )
-
-    employees: Mapped["EmployeeRole"] = relationship(back_populates="roles")

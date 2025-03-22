@@ -1,10 +1,9 @@
 import datetime
 
-from typing import TYPE_CHECKING, List
 from enum import Enum
-from sqlalchemy import ForeignKey
+from typing import TYPE_CHECKING
+from sqlalchemy import ForeignKey, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Enum as SQLEnum
 
 from src.db.postgres import (
     Base, intpk, created_at, changed_at,
@@ -40,7 +39,7 @@ class Reservation(Base):
 
     reservation_details: Mapped['ReservationDetail'] = relationship(
         back_populates="reservation")
-    status_history: Mapped[List["ReservationStatusHistory"]] = relationship(
+    status_history: Mapped[list["ReservationStatusHistory"]] = relationship(
         back_populates="reservation", cascade="all, delete-orphan"
     )
     review: Mapped['ReservationReview'] = relationship(

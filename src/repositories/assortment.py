@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
@@ -16,7 +15,7 @@ class AssortmentRepository:
     @handle_db_errors
     async def get_all_assortment(
         session: AsyncSession = Depends(get_async_session)
-    ) -> List[AssortmentGet]:
+    ) -> list[AssortmentGet]:
         query = (
             select(Category)
             .options(

@@ -1,18 +1,24 @@
+import logging
 import uvicorn
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
+# from starlette.middleware.base import BaseHTTPMiddleware
 
 from src.routers import routers
 from src.configs.app import settings
+# from src.middleware.jwt_middleware import check_jwt_token
 
 
 app = FastAPI(
     title="Booking-service-api",
     version="0.0.1a",
     openapi_url="/api/v1/openapi.json",
+    # debug=True
     docs_url="/api/v1/docs",
-    redoc_url=None,
+    # docs_url=None,
+    # redoc_url=None,
 )
 
 
@@ -34,6 +40,17 @@ app.add_middleware(
                    "Access-Control-Allow-Origin",
                    "Authorization"],
 )
+
+# app.add_middleware(BaseHTTPMiddleware, dispatch=check_jwt_token)
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logging.error(f"Unhandled error: {exc}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error"},
+    )
 
 
 for router in routers:

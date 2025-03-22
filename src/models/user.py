@@ -1,6 +1,6 @@
 import datetime
 
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING
 from sqlalchemy import BIGINT, text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -28,7 +28,7 @@ class User(Base):
     updated_at: Mapped[updated_at | None]
     is_active: Mapped[bool] = mapped_column(server_default=text("true"))
 
-    sources: Mapped[List["UserSource"]] = relationship(back_populates="user")
+    sources: Mapped[list["UserSource"]] = relationship(back_populates="user")
     carts: Mapped['Cart'] = relationship(back_populates="user")
     reservation_details: Mapped['ReservationDetail'] = relationship(
         back_populates="user")

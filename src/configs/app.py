@@ -17,7 +17,7 @@ class Settings(BaseSettings):
 
     BOT_TOKEN: str
     AUTH_DATE_THRESHOLD: int
-    SECRET_KEY_STR: str
+    SECRET_KEY_VALIDATE: str
 
     SECRET_KEY_JWT: str
     REFRESH_SECRET_KEY_JWT: str

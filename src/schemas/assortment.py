@@ -1,4 +1,3 @@
-from typing import List
 from pydantic import BaseModel, ConfigDict
 
 
@@ -17,7 +16,7 @@ class ProductBase(BaseModel):
     name: str
     description: str
     price: float
-    images: List[ProductImageGet]
+    images: list[ProductImageGet]
 
 
 class CategoryGet(BaseModel):
@@ -34,7 +33,7 @@ class AssortmentGet(BaseModel):
     id: int
     name: str
     availability: bool
-    products: List[ProductBase]
+    products: list[ProductBase]
 
 
 class ProductGet(ProductBase):

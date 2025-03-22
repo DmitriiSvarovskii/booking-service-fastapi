@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
@@ -44,7 +43,7 @@ class TableRepository:
     @handle_db_errors
     async def get_all_tables(
         session: AsyncSession = Depends(get_async_session)
-    ) -> List[TableGet]:
+    ) -> list[TableGet]:
         query = (
             select(Table)
             .options(selectinload(Table.table_images))

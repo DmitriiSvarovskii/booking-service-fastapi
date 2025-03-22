@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import Depends, HTTPException
 from sqlalchemy import select, insert
 from sqlalchemy.orm import selectinload
@@ -13,6 +12,7 @@ from src.models import (
 from src.schemas.reservation import (
     ReservationCreate, ReservationDetailsCreate,
     ReservationCustomerInfoCreate, ReservationDataGet,
+    ReservationDataCreate
 )
 
 
@@ -44,10 +44,10 @@ class ReservationRepository:
 
     @staticmethod
     @handle_db_errors
-    async def get_all_reservation_by_user(
+    async def get_all_reservations_by_user_id(
         user_id: int,
         session: AsyncSession = Depends(get_async_session)
-    ) -> List[ReservationDataGet]:
+    ) -> list[ReservationDataGet]:
         query = (
             select(Reservation)
             .options(selectinload(Reservation.reservation_details))
@@ -99,3 +99,39 @@ class ReservationRepository:
         )
         await session.execute(stmt)
         return {"status": "success"}
+
+    @classmethod
+    @handle_db_errors
+    async def create_full_reservation(
+        cls,
+        reservation_data: ReservationDataCreate,
+        session: AsyncSession
+    ) -> dict:
+        """Создает бронирование, детали и данные клиента (если есть)."""
+        async with session.begin():
+            try:
+                reservation_id = await cls.create_reservation(
+                    reservation_data=reservation_data.reservation_data,
+                    session=session
+                )
+
+                reservation_data.reservation_details_data.reservation_id = reservation_id  # noqa
+                await cls.create_reservation_details(
+                    reservation_details_data=reservation_data.reservation_details_data,  # noqa
+                    session=session
+                )
+
+                if reservation_data.reservation_customer_info_data:
+                    reservation_data.reservation_customer_info_data.reservation_id = reservation_id  # noqa
+                    await cls.create_reservation_customer_info(
+                        reservation_customer_info_data=reservation_data.reservation_customer_info_data,  # noqa
+                        session=session
+                    )
+
+                return {"status": "success"}
+
+            except HTTPException as e:
+                raise e
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500, detail=f"Unexpected error: {str(e)}")
