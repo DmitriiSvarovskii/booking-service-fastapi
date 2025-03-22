@@ -15,24 +15,6 @@ router = APIRouter(
 )
 
 
-@router.get("/test2", response_model=list[CartAllGet])
-async def get_test_cart_items(
-    session: AsyncSession = Depends(get_async_session),
-    current_user: AuthUser = Depends(
-        get_current_user),
-):
-    """
-    Получение всех товаров в корзине текущего пользователя.
-
-    **Требует JWT-токен.**
-    Если токен устарел - необходимо передать refresh token.
-    """
-    return await CartRepository.get_cart_items(
-        user_id=current_user.user_id,
-        session=session
-    )
-
-
 @router.get("/", response_model=list[CartAllGet])
 async def get_cart_items(
     session: AsyncSession = Depends(get_async_session),
