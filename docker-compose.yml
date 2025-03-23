@@ -33,7 +33,7 @@ services:
     container_name: nginx
     depends_on:
       - app
-      # - certbot  # Дожидаемся получения сертификатов
+      - certbot
     ports:
       - "80:80"
       - "443:443"
