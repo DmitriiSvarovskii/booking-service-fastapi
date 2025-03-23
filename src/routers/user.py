@@ -7,7 +7,7 @@ from src.db.postgres import get_async_session
 
 
 router = APIRouter(
-    prefix="/api/v1/user",
+    prefix="/user",
     tags=["User"])
 
 

@@ -10,7 +10,7 @@ from src.docs import table_descriptions
 
 
 router = APIRouter(
-    prefix="/api/v1/table",
+    prefix="/table",
     tags=["Table"],
     dependencies=[Depends(get_current_user)]
 

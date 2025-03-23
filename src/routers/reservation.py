@@ -11,7 +11,7 @@ from src.docs import reservation_descriptions
 
 
 router = APIRouter(
-    prefix="/api/v1/reservation",
+    prefix="/reservation",
     tags=["Reservation"],
     dependencies=[Depends(get_current_user)]
 

@@ -11,9 +11,9 @@ from src.docs.main_descriptions import tags_metadata, description
 app = FastAPI(
     title="Booking-service-api",
     version="0.0.1a",
-    openapi_url="/api/v1/openapi.json",
+    openapi_url="/openapi.json",
     # debug=True
-    docs_url="/api/v1/docs",
+    docs_url="/docs",
     description=description,
     openapi_tags=tags_metadata
 )

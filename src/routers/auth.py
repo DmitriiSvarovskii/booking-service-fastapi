@@ -10,7 +10,7 @@ from src.docs import auth_descriptions
 
 
 router = APIRouter(
-    prefix="/api/v1/auth",
+    prefix="/auth",
     tags=["Auth"]
 )
 

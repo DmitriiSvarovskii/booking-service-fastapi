@@ -10,7 +10,7 @@ from src.docs import cart_descriptions
 
 
 router = APIRouter(
-    prefix="/api/v1/cart",
+    prefix="/cart",
     tags=["Cart"],
 )
 

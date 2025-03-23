@@ -11,7 +11,7 @@ from src.docs import order_descriptions
 
 
 router = APIRouter(
-    prefix="/api/v1/order",
+    prefix="/order",
     tags=["Order"],
     dependencies=[Depends(get_current_user)]
 

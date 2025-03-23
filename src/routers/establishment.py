@@ -7,7 +7,7 @@ from src.docs import establishment_descriptions
 
 
 router = APIRouter(
-    prefix="/api/v1/establishment",
+    prefix="/establishment",
     tags=["Establishment"],
     dependencies=[Depends(get_current_user)]
 

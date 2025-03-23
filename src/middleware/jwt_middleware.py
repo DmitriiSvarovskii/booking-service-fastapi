@@ -9,7 +9,7 @@ ALGORITHM = "HS256"
 
 
 async def check_jwt_token(request: Request, call_next: Callable):
-    if request.url.path.startswith('/api/v1/docs') or request.url.path == '/api/v1/openapi.json' or request.url.path == '/api/v1/auth/token':  # noqa
+    if request.url.path.startswith('/docs') or request.url.path == '/openapi.json' or request.url.path == '/auth/token':  # noqa
         return await call_next(request)
 
     token = request.headers.get("Authorization")

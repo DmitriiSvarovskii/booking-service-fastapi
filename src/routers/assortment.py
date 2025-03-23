@@ -8,7 +8,7 @@ from src.dependencies.current_user import get_current_user
 
 
 router = APIRouter(
-    prefix="/api/v1/assortment",
+    prefix="/assortment",
     tags=["Assortment"],
     dependencies=[Depends(get_current_user)]
 
