@@ -56,4 +56,3 @@ DELETE_ALL_CART_ITEMS_DESCRIPTION = """
 - `403 Forbidden` – Нет доступа.
 - `500 Internal Server Error` – Внутренняя ошибка сервера.
 """
-

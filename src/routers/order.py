@@ -7,6 +7,7 @@ from src.schemas.auth import AuthUser
 from src.repositories.order import OrderRepository
 from src.services.order_service import OrderService
 from src.dependencies.current_user import get_current_user
+from src.docs import order_descriptions
 
 
 router = APIRouter(
@@ -20,18 +21,14 @@ router = APIRouter(
 @router.get(
     "/",
     status_code=status.HTTP_200_OK,
-    response_model=list[OrderDataGet]
+    response_model=list[OrderDataGet],
+    summary=order_descriptions.GET_ALL_ORDERS_SUMMARY,
+    description=order_descriptions.GET_ALL_ORDERS_DESCRIPTION
 )
 async def get_all_orders(
     current_user: AuthUser = Depends(get_current_user),
     session: AsyncSession = Depends(get_async_session)
 ):
-    """
-    Получение всех оформленных заказов текущего пользователя.
-
-    **Требует JWT-токен.**
-    Если токен устарел - необходимо передать refresh token.
-    """
     orders_data = await OrderRepository.get_all_orders_by_user_id(
         user_id=current_user.user_id,
         session=session
@@ -42,18 +39,14 @@ async def get_all_orders(
 @router.get(
     "/{id}/",
     status_code=status.HTTP_200_OK,
-    response_model=OrderDataGet
+    response_model=OrderDataGet,
+    summary=order_descriptions.GET_ORDER_BY_ID_SUMMARY,
+    description=order_descriptions.GET_ORDER_BY_ID_SUMMARY
 )
-async def get_order_by_order_id(
+async def get_order_by_id(
     order_id: int,
     session: AsyncSession = Depends(get_async_session)
 ):
-    """
-    Получение одного заказа текущего пользователя.
-
-    **Требует JWT-токен.**
-    Если токен устарел - необходимо передать refresh token.
-    """
     order_data = await OrderRepository.get_order_by_id(
         order_id=order_id,
         session=session
@@ -64,9 +57,11 @@ async def get_order_by_order_id(
 @router.post(
     "/",
     response_model=dict,
-    status_code=status.HTTP_201_CREATED
+    status_code=status.HTTP_201_CREATED,
+    summary=order_descriptions.CREATE_ORDER_SUMMARY,
+    description=order_descriptions.CREATE_ORDER_DESCRIPTION
 )
-async def post_order(
+async def create_order(
     order_data: OrderCreate,
     session: AsyncSession = Depends(get_async_session)
 ):

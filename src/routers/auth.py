@@ -6,6 +6,7 @@ from src.services.token_generator import TokenGenerator
 from src.services.data_validator import DataValidator
 from src.dependencies.token_generator import get_token_generator
 from src.dependencies.data_validator import get_data_validator
+from src.docs import auth_descriptions
 
 
 router = APIRouter(
@@ -17,7 +18,9 @@ router = APIRouter(
 @router.post(
     "/validate_data/",
     response_model=TokenResponse,
-    status_code=status.HTTP_200_OK
+    status_code=status.HTTP_200_OK,
+    summary=auth_descriptions.VALIDATE_DATA_SUMMARY,
+    description=auth_descriptions.VALIDATE_DATA_DESCRIPTION
 )
 async def validate_data(
     request: InitDataRequest,
