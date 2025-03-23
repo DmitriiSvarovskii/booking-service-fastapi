@@ -25,4 +25,4 @@ jobs:
 
       - name: Deploy to server
         run: |
-          ssh root@213.139.208.72 "cd /var/www/booking/booking-service-fastapi && git pull origin main && docker-compose up -d --build"  # Выполняем деплой на сервере
+          ssh root@213.139.208.72 "cd /var/www/booking/booking-service-fastapi && git pull origin main && docker-compose up -d --build nginx"
