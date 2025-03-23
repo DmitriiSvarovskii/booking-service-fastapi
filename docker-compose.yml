@@ -27,5 +27,66 @@ services:
     ports:
       - "8000:8000"
 
+  nginx:
+    image: nginx:latest
+    restart: always
+    container_name: nginx
+    depends_on:
+      - app
+      - certbot  # Дожидаемся получения сертификатов
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/letsencrypt
+      - ./nginx/www:/var/www/html
+    environment:
+      - MODE=${MODE}
+    entrypoint: ["/bin/sh", "-c", "if [ \"$MODE\" = \"PROD\" ]; then nginx -g 'daemon off;'; else sleep infinity; fi"]
+    profiles:
+      - prod
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./nginx/ssl:/etc/letsencrypt
+      - ./nginx/www:/var/www/html
+    entrypoint: ["/bin/sh", "-c", "if [ \"$MODE\" = \"PROD\" ]; then certbot certonly --webroot -w /var/www/html -d api.daxmedia.site -d www.api.daxmedia.site --email your@email.com --agree-tos --non-interactive --rsa-key-size 4096; else sleep infinity; fi"]
+    profiles:
+      - prod
+
 volumes:
   postgres_data:
+# version: '3.8'
+
+# services:
+#   db:
+#     image: postgres:16.4
+#     restart: always
+#     container_name: postgres_db
+#     env_file:
+#       - .env
+#     environment:
+#       POSTGRES_USER: ${DB_USER}
+#       POSTGRES_PASSWORD: ${DB_PASS}
+#       POSTGRES_DB: ${DB_NAME}
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+#     ports:
+#       - "5433:5432"
+
+#   app:
+#     build: .
+#     container_name: fastapi_app
+#     restart: always
+#     depends_on:
+#       - db
+#     env_file:
+#       - .env
+#     ports:
+#       - "8000:8000"
+
+# volumes:
+#   postgres_data:
