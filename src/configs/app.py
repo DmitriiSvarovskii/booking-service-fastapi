@@ -27,6 +27,9 @@ class Settings(BaseSettings):
     ALLOW_HEADERS: list[str]
     ALLOW_ORIGINS: list[str]
 
+    SWAGGER_USERNAME: str
+    SWAGGER_PASSWORD: str
+
     @property
     def DB_URL(self):
         return (f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@"
