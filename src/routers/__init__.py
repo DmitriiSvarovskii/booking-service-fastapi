@@ -3,12 +3,16 @@ from src.dependencies.current_user import get_current_user
 
 from src.routers import (
     auth, user, establishment, table, reservation,
-    assortment, cart, order,
+    assortment, cart, order
 )
 
 # Создаем список роутеров, навешивая авторизацию глобально
 routers = [
-    auth.router,
+    APIRouter(
+        prefix="/auth",
+        dependencies=[Depends(get_current_user)],
+        routes=auth.router.routes
+    ),
     APIRouter(
         prefix="/user",
         dependencies=[Depends(get_current_user)],
@@ -45,19 +49,3 @@ routers = [
         routes=order.router.routes
     ),
 ]
-
-# from src.routers import (
-#     auth, user, establishment, table, reservation,
-#     assortment, cart, order,
-# )
-
-# routers = (
-#     auth.router,
-#     user.router,
-#     establishment.router,
-#     table.router,
-#     reservation.router,
-#     assortment.router,
-#     cart.router,
-#     order.router,
-# )

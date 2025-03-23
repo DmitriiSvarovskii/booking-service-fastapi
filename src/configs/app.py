@@ -2,7 +2,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    # PYTHONPATH: str
 
     MODE: str
 
@@ -22,6 +21,11 @@ class Settings(BaseSettings):
     SECRET_KEY_JWT: str
     REFRESH_SECRET_KEY_JWT: str
     ALGORITHM: str
+
+    ALLOW_METHODS: list[str]
+    ALLOW_HOSTS: list[str]
+    ALLOW_HEADERS: list[str]
+    ALLOW_ORIGINS: list[str]
 
     @property
     def DB_URL(self):

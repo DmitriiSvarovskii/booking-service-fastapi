@@ -6,41 +6,30 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.routers import routers
 from src.configs.app import settings
 from src.docs.main_descriptions import tags_metadata, description
+from src.middlewares.check_headers import HeaderValidatorMiddleware
 
 
 app = FastAPI(
     title="Booking-service-api",
     version="0.0.1a",
-    openapi_url="/openapi.json",
     # debug=True
-    docs_url="/docs",
     description=description,
     openapi_tags=tags_metadata
 )
 
 
-ORIGINS = [
-    "http://localhost",
-    "http://localhost:5173",
-    "https://api.telegram.org",
-]
-
-
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=ORIGINS,
-    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
-    allow_headers=["Content-Type",
-                   "Set-Cookie",
-                   "Access-Control-Allow-Headers",
-                   "Access-Control-Allow-Origin",
-                   "Authorization"],
+    allow_origins=settings.ALLOW_ORIGINS,
+    allow_methods=settings.ALLOW_METHODS,
+    allow_headers=settings.ALLOW_HEADERS,
 )
-
 
 for router in routers:
     app.include_router(router)
+
+app.middleware("http")(HeaderValidatorMiddleware.check_headers)
 
 
 if __name__ == "__main__":
