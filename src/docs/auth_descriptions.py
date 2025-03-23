@@ -1,54 +1,28 @@
-# Общий шаблон для всех описаний
-BASE_DESCRIPTION = """
-{action} {item} текущего пользователя.
+VALIDATE_DATA_SUMMARY = "Валидация данных пользователя"
+VALIDATE_DATA_DESCRIPTION = """
+Проверяет и валидирует переданные данные пользователя для получения JWT-токена.
 
 **Требования:**
-- **JWT-токен** (если устарел — передать refresh token).
-{extra_requirements}
+- **JWT-токен** не требуется, но данные должны быть корректными.
+- **init_data** (строка) – Данные для валидации, \
+    передаётся в теле запроса (JSON).
 
 **Возможные ошибки:**
-- `401 Unauthorized` – Отсутствует или некорректный JWT-токен.
-- `403 Forbidden` – Нет доступа.
+- `400 Bad Request` – Данные невалидны.
 - `500 Internal Server Error` – Внутренняя ошибка сервера.
 """
 
-# Базовые параметры
-PRODUCT_ID_REQUIREMENT = "- **product_id** (int) – ID товара, \
-    который нужно {action}, передаётся в теле запроса (JSON)."
-NO_EXTRA_REQUIREMENTS = ""
+LOGIN_FOR_ACCESS_TOKEN_SUMMARY = "Получение JWT-токена для \
+авторизации в swagger"
+LOGIN_FOR_ACCESS_TOKEN_DESCRIPTION = """
+Получает JWT-токен для авторизации.
 
-# Конкретные описания
-REMOVE_ONE_ITEM_FROM_CART_SUMMARY = "Удаление одного товара из корзины"
-REMOVE_ONE_ITEM_FROM_CART_DESCRIPTION = BASE_DESCRIPTION.format(
-    action="Удаляет",
-    item="один товар из корзины",
-    extra_requirements=PRODUCT_ID_REQUIREMENT.format(action="удалить")
-)
+**Требования:**
+- **JWT-токен** не требуется, но данные должны быть корректными.
+- **init_data** (строка) – Данные для валидации, \
+    передаётся в теле запроса (JSON).
 
-ADD_ONE_ITEM_FROM_CART_SUMMARY = "Добавление товара в корзину"
-ADD_ONE_ITEM_FROM_CART_DESCRIPTION = BASE_DESCRIPTION.format(
-    action="Добавляет",
-    item="товар в корзину",
-    extra_requirements=PRODUCT_ID_REQUIREMENT.format(action="добавить")
-)
-
-GET_ONE_ITEM_FROM_CART_SUMMARY = "Получение одного товара из корзины"
-GET_ONE_ITEM_FROM_CART_DESCRIPTION = BASE_DESCRIPTION.format(
-    action="Получает",
-    item="один товар из корзины",
-    extra_requirements=PRODUCT_ID_REQUIREMENT.format(action="получить")
-)
-
-GET_ALL_ITEMS_FROM_CART_SUMMARY = "Получение всех товаров из корзины"
-GET_ALL_ITEMS_FROM_CART_DESCRIPTION = BASE_DESCRIPTION.format(
-    action="Получает",
-    item="все товары из корзины",
-    extra_requirements=NO_EXTRA_REQUIREMENTS
-)
-
-DELETE_ALL_ITEMS_FROM_CART_SUMMARY = "Удаление всех товаров из корзины"
-DELETE_ALL_ITEMS_FROM_CART_DESCRIPTION = BASE_DESCRIPTION.format(
-    action="Удаляет",
-    item="все товары из корзины",
-    extra_requirements=NO_EXTRA_REQUIREMENTS
-)
+**Возможные ошибки:**
+- `400 Bad Request` – Данные невалидны.
+- `500 Internal Server Error` – Внутренняя ошибка сервера.
+"""

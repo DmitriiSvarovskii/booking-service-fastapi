@@ -1,58 +1,54 @@
-REMOVE_ONE_ITEM_FROM_CART_SUMMARY = "Удаление одного товара из корзины"
-
-REMOVE_ONE_ITEM_FROM_CART_DESCRIPTION = """
-Удаляет один товар из корзины текущего пользователя.
+# Общий шаблон для всех описаний
+BASE_DESCRIPTION = """
+{action} {item} текущего пользователя.
 
 **Требования:**
 - **JWT-токен** (если устарел — передать refresh token).
-- **product_id** (int) – ID товара, который нужно удалить, \
-    передаётся в теле запроса (JSON).
+{extra_requirements}
 
 **Возможные ошибки:**
 - `401 Unauthorized` – Отсутствует или некорректный JWT-токен.
 - `403 Forbidden` – Нет доступа.
 - `500 Internal Server Error` – Внутренняя ошибка сервера.
 """
+
+# Базовые параметры
+PRODUCT_ID_REQUIREMENT = "- **product_id** (int) – ID товара, \
+    который нужно {action}, передаётся в теле запроса (JSON)."
+NO_EXTRA_REQUIREMENTS = ""
+
+# Конкретные описания
+REMOVE_ONE_ITEM_FROM_CART_SUMMARY = "Удаление одного товара из корзины"
+REMOVE_ONE_ITEM_FROM_CART_DESCRIPTION = BASE_DESCRIPTION.format(
+    action="Удаляет",
+    item="один товар из корзины",
+    extra_requirements=PRODUCT_ID_REQUIREMENT.format(action="удалить")
+)
 
 ADD_ONE_ITEM_FROM_CART_SUMMARY = "Добавление товара в корзину"
+ADD_ONE_ITEM_FROM_CART_DESCRIPTION = BASE_DESCRIPTION.format(
+    action="Добавляет",
+    item="товар в корзину",
+    extra_requirements=PRODUCT_ID_REQUIREMENT.format(action="добавить")
+)
 
-ADD_ONE_ITEM_FROM_CART_DESCRIPTION = """
-Добавление товара в корзину текущего пользователя.
+GET_ONE_ITEM_FROM_CART_SUMMARY = "Получение одного товара из корзины"
+GET_ONE_ITEM_FROM_CART_DESCRIPTION = BASE_DESCRIPTION.format(
+    action="Получает",
+    item="один товар из корзины",
+    extra_requirements=PRODUCT_ID_REQUIREMENT.format(action="получить")
+)
 
-**Требования:**
-- **JWT-токен** (если устарел — передать refresh token).
-- **product_id** (int) – ID товара, который нужно удалить, \
-    передаётся в теле запроса (JSON).
+GET_ALL_ITEMS_FROM_CART_SUMMARY = "Получение всех товаров из корзины"
+GET_ALL_ITEMS_FROM_CART_DESCRIPTION = BASE_DESCRIPTION.format(
+    action="Получает",
+    item="все товары из корзины",
+    extra_requirements=NO_EXTRA_REQUIREMENTS
+)
 
-**Возможные ошибки:**
-- `401 Unauthorized` – Отсутствует или некорректный JWT-токен.
-- `403 Forbidden` – Нет доступа.
-- `500 Internal Server Error` – Внутренняя ошибка сервера.
-"""
-GET_CART_ITEMS_SUMMARY = "Получение всех товаров в корзине"
-
-GET_CART_ITEMS_DESCRIPTION = """
-Получение всех товаров в корзине текущего пользователя.
-
-**Требования:**
-- **JWT-токен** (если устарел — передать refresh token).
-
-**Возможные ошибки:**
-- `401 Unauthorized` – Отсутствует или некорректный JWT-токен.
-- `403 Forbidden` – Нет доступа.
-- `500 Internal Server Error` – Внутренняя ошибка сервера.
-"""
-
-DELETE_ALL_CART_ITEMS_SUMMARY = "Удаление всех товаров из корзины"
-
-DELETE_ALL_CART_ITEMS_DESCRIPTION = """
-Удаление всех товаров из корзины текущего пользователя.
-
-**Требования:**
-- **JWT-токен** (если устарел — передать refresh token).
-
-**Возможные ошибки:**
-- `401 Unauthorized` – Отсутствует или некорректный JWT-токен.
-- `403 Forbidden` – Нет доступа.
-- `500 Internal Server Error` – Внутренняя ошибка сервера.
-"""
+DELETE_ALL_ITEMS_FROM_CART_SUMMARY = "Удаление всех товаров из корзины"
+DELETE_ALL_ITEMS_FROM_CART_DESCRIPTION = BASE_DESCRIPTION.format(
+    action="Удаляет",
+    item="все товары из корзины",
+    extra_requirements=NO_EXTRA_REQUIREMENTS
+)

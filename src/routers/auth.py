@@ -55,7 +55,9 @@ async def validate_data(
 @router.post(
     "/token",
     status_code=status.HTTP_200_OK,
-    response_model=TokenResponse
+    response_model=TokenResponse,
+    summary=auth_descriptions.LOGIN_FOR_ACCESS_TOKEN_SUMMARY,
+    description=auth_descriptions.LOGIN_FOR_ACCESS_TOKEN_DESCRIPTION
 )
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
