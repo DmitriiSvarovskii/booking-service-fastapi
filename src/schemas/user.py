@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel, Field, ConfigDict
 
 
@@ -5,10 +6,10 @@ class UserCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     telegram_id: int
-    first_name: str
-    last_name: str
-    username: str
-    is_premium: bool
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    username: Optional[str] = None
+    is_premium: bool = False
 
 
 class User(BaseModel):

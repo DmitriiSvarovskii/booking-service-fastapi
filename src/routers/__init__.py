@@ -6,7 +6,7 @@ from src.routers import (
     assortment, cart, order
 )
 
-# Создаем список роутеров, навешивая авторизацию глобально
+
 routers = [
     APIRouter(
         prefix="/auth",
@@ -15,7 +15,6 @@ routers = [
     ),
     APIRouter(
         prefix="/user",
-        dependencies=[Depends(get_current_user)],
         routes=user.router.routes
     ),
     APIRouter(
@@ -26,7 +25,7 @@ routers = [
     APIRouter(
         prefix="/table",
         dependencies=[Depends(get_current_user)],
-        routes=table.router.routes
+        routes=table.router.routes,
     ),
     APIRouter(
         prefix="/reservation",

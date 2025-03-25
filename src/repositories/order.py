@@ -89,18 +89,6 @@ class OrderRepository:
         await session.commit()
 
         return {"status": "success"}
-    # @staticmethod
-    # @handle_db_errors
-    # async def create_order_details(
-    #     order_details_data: OrderDetailsCreate,
-    #     session: AsyncSession = Depends(get_async_session)
-    # ):
-    #     stmt = (
-    #         insert(OrderDetail)
-    #         .values(**order_details_data.model_dump())
-    #     )
-    #     await session.execute(stmt)
-    #     return {"status": "success"}
 
     @classmethod
     @handle_db_errors
@@ -120,7 +108,6 @@ class OrderRepository:
                     order_details.model_copy(update={"order_id": order_id})
                     for order_details in order_data.order_details_data
                 ]
-                # order_data.order_details_data.order_id = order_id
                 await cls.create_order_details(
                     order_details_data=order_details_with_id,
                     session=session

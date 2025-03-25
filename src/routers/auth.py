@@ -64,7 +64,6 @@ async def login_for_access_token(
     token_generator: TokenGenerator = Depends(get_token_generator)
 
 ):
-    """Получение JWT токенов: access и refresh"""
     if (
         form_data.username == settings.SWAGGER_USERNAME
     ) and (

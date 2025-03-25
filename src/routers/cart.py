@@ -26,12 +26,6 @@ async def get_cart_items(
     current_user: AuthUser = Depends(
         get_current_user),
 ):
-    """
-    Получение всех товаров в корзине текущего пользователя.
-
-    **Требует JWT-токен.**
-    Если токен устарел - необходимо передать refresh token.
-    """
     return await CartRepository.get_cart_items(
         user_id=current_user.user_id,
         session=session
@@ -50,12 +44,6 @@ async def add_one_item_from_cart(
     session: AsyncSession = Depends(get_async_session),
     current_user: AuthUser = Depends(get_current_user),
 ):
-    """
-    Добавление товара в корзину.
-
-    **Требует JWT-токен.**
-    Если токен устарел - необходимо передать refresh token.
-    """
     try:
         cart_data.user_id = current_user.user_id
         return await CartRepository.add_one_item_from_cart(cart_data, session)
@@ -93,12 +81,6 @@ async def remove_all_item_from_cart(
     session: AsyncSession = Depends(get_async_session),
     current_user: AuthUser = Depends(get_current_user),
 ):
-    """
-    Очистка всей корзины текущего пользователя.
-
-    **Требует JWT-токен.**
-    Если токен устарел - необходимо передать refresh token.
-    """
     return await CartRepository.remove_all_from_cart_by_user_id(
         user_id=current_user.user_id,
         session=session
