@@ -27,6 +27,7 @@ services:
     ports:
       - "8000:8000"
 
+
   nginx:
     image: nginx:latest
     restart: always
@@ -43,7 +44,7 @@ services:
       - ./nginx/www:/var/www/html
     environment:
       - MODE=${MODE}
-    entrypoint: ["/bin/sh", "-c", "if [ \"$MODE\" = \"PROD\" ]; then certbot certonly --webroot -w /var/www/html -d api.daxmedia.site -d www.api.daxmedia.site -d front.daxmedia.site -d www.front.daxmedia.site --email your@email.com --agree-tos --non-interactive --rsa-key-size 4096; else sleep infinity; fi"]
+    entrypoint: ["/bin/sh", "-c", "if [ \"$MODE\" = \"PROD\" ]; then nginx -g 'daemon off;'; else sleep infinity; fi"]
     profiles:
       - prod
 
