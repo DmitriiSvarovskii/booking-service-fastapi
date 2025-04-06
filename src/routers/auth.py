@@ -23,7 +23,7 @@ router = APIRouter(
     summary=auth_descriptions.VALIDATE_DATA_SUMMARY,
     description=auth_descriptions.VALIDATE_DATA_DESCRIPTION
 )
-async def validate_data(
+def validate_data(
     request: InitDataRequest,
     validator: DataValidator = Depends(get_data_validator),
     token_generator: TokenGenerator = Depends(get_token_generator)
@@ -59,7 +59,7 @@ async def validate_data(
     response_model=TokenResponse,
     include_in_schema=False
 )
-async def login_for_access_token(
+def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     token_generator: TokenGenerator = Depends(get_token_generator)
 
