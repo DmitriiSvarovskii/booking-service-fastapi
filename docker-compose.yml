@@ -42,6 +42,7 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/ssl:/etc/letsencrypt
       - ./nginx/www:/var/www/html
+      - /var/www/booking/webApp/my-mini-app/build:/var/www/frontend
     environment:
       - MODE=${MODE}
     entrypoint: ["/bin/sh", "-c", "if [ \"$MODE\" = \"PROD\" ]; then nginx -g 'daemon off;'; else sleep infinity; fi"]
