@@ -29,6 +29,11 @@ app.add_middleware(
 for router in routers:
     app.include_router(router)
 
+
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
 app.middleware("http")(HeaderValidatorMiddleware.check_headers)
 
 
