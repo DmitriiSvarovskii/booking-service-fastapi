@@ -7,12 +7,13 @@ from src.routers import routers
 from src.configs.app import settings
 from src.docs.main_descriptions import tags_metadata, description
 from src.middlewares.check_headers import HeaderValidatorMiddleware
+from src.logs import LOGGING_CONFIG
 
 
 app = FastAPI(
     title="Booking-service-api",
     version="0.0.1a",
-    # debug=True
+    debug=True,
     description=description,
     openapi_tags=tags_metadata
 )
@@ -30,10 +31,6 @@ for router in routers:
     app.include_router(router)
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
 app.middleware("http")(HeaderValidatorMiddleware.check_headers)
 
 
@@ -42,5 +39,6 @@ if __name__ == "__main__":
         "src.main:app",
         host=settings.SERVICE_HOST,
         port=settings.SERVICE_PORT,
-        reload=True
+        reload=settings.RELOAD_FLAG,
+        log_config=LOGGING_CONFIG
     )

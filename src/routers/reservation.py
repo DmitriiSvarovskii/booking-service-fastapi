@@ -1,4 +1,3 @@
-from typing import Optional
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -69,24 +68,3 @@ async def create_reservation(
         reservation_data=reservation_data,
         session=session
     )
-
-
-@router.put("/{id}/", response_model=Optional[None])
-async def put_reservation(
-    session: AsyncSession = Depends(get_async_session)
-):
-    pass
-
-
-@router.patch("/{id}/", response_model=Optional[None])
-async def patch_reservation(
-    session: AsyncSession = Depends(get_async_session)
-):
-    pass
-
-
-@router.delete("/{id}/", response_model=Optional[None])
-async def delete_reservation(
-    session: AsyncSession = Depends(get_async_session)
-):
-    pass

@@ -30,6 +30,10 @@ class Settings(BaseSettings):
     SWAGGER_USERNAME: str
     SWAGGER_PASSWORD: str
 
+    RELOAD_FLAG: bool
+
+    LOGS_PATH: str
+
     @property
     def DB_URL(self):
         return (f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@"
