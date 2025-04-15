@@ -16,7 +16,7 @@ router = APIRouter(
 
 @router.get(
     "/",
-    response_model=list[None],
+    response_model=None,
     summary=establishment_descriptions.GET_ESTABLISHMENT_BY_ID_SUMMARY,
     description=establishment_descriptions.GET_ESTABLISHMENT_BY_ID_DESCRIPTION
 )
